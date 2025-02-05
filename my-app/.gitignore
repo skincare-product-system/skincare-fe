@@ -28,9 +28,17 @@ yarn-error.*
 # macOS
 .DS_Store
 *.pem
+*.cer
 
 # local env files
 .env*.local
+.env
+.env.*
 
 # typescript
 *.tsbuildinfo
+
+# lock files
+package-lock.json
+yarn.lock
+bun.lockb

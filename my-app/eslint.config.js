@@ -1,9 +1,10 @@
-import globals from 'globals'
+import js from '@eslint/js'
+import imports from 'eslint-plugin-import'
 import eslintPluginPrettier from 'eslint-plugin-prettier'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
-import js from '@eslint/js'
+import globals from 'globals'
 
 export default [
   { ignores: ['dist', 'build', 'node_modules'] },
@@ -38,8 +39,12 @@ export default [
         },
         alias: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
-          map: [['@', './src']]
-          // Add more aliases here
+          map: [
+            ['@', './src'],
+            ['@components', './src/components'],
+            ['@styles', './src/styles'],
+            ['@constants', './src/constants']
+          ]
         }
       }
     },
@@ -112,12 +117,7 @@ export default [
           varsIgnorePattern: '^_'
         }
       ],
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'no-param-reassign': ['error', { props: false }],
-
-      // Accessibility rules (if you really need to disable them)
-      'jsx-a11y/no-static-element-interactions': 'warn',
-      'jsx-a11y/click-events-have-key-events': 'warn'
+      'no-console': ['warn', { allow: ['warn', 'error'] }]
     }
   }
 ]

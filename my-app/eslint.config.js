@@ -36,15 +36,6 @@ export default [
         node: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
           moduleDirectory: ['node_modules', 'src/']
-        },
-        alias: {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-          map: [
-            ['@', './src'],
-            ['@components', './src/components'],
-            ['@styles', './src/styles'],
-            ['@constants', './src/constants']
-          ]
         }
       }
     },

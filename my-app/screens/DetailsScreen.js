@@ -1,12 +1,11 @@
-import * as React from 'react';
-import { View, Text } from 'react-native';
+import { Text, View } from 'react-native'
 
 function DetailsScreen() {
   return (
     <View>
       <Text>Details Screen</Text>
     </View>
-  );
+  )
 }
 
-export default DetailsScreen;
+export default DetailsScreen

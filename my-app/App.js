@@ -1,14 +1,16 @@
 import { NavigationContainer } from '@react-navigation/native'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 
 import { DrawerNavigator } from './src/navigator'
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <DrawerNavigator />
-      </NavigationContainer>
+      <SafeAreaView style={{ flex: 1 }}>
+        <NavigationContainer>
+          <DrawerNavigator />
+        </NavigationContainer>
+      </SafeAreaView>
     </SafeAreaProvider>
   )
 }

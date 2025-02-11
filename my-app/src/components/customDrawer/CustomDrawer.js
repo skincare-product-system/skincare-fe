@@ -1,12 +1,25 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity, Animated } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
-import { category } from '../../db/categories'
+import http from '../../utils/http'
 
 export default function CustomDrawer({ navigation }) {
   const [expandedCategories, setExpandedCategories] = useState({})
+  const [category, setCategory] = useState([])
+
+  useEffect(() => {
+    async function getCategories() {
+      try {
+        const result = await http.get('categories')
+        setCategory(result.data)
+      } catch (error) {
+        console.error('Lỗi khi fetch categories:', error)
+      }
+    }
+    getCategories()
+  }, [])
 
   const toggleSubMenu = (categoryId) => {
     setExpandedCategories((prevState) => ({

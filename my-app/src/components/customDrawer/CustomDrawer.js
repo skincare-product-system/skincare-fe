@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, Animated } from 'react-native'
+import { View, Text, TouchableOpacity, Animated, ScrollView } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import http from '../../utils/http'
@@ -50,7 +50,7 @@ export default function CustomDrawer({ navigation }) {
   }
 
   return (
-    <View style={{ padding: 20 }}>
+    <ScrollView style={{ padding: 20 }}>
       {category.map((item, index) => {
         const isExpanded = expandedCategories[item.id] || false
         return (
@@ -68,7 +68,7 @@ export default function CustomDrawer({ navigation }) {
                 <Text>{item.name}</Text>
               </TouchableOpacity>
 
-              {item.subCategories && item.subCategories?.length > 0 && (
+              {item.subCategories && item.subCategories.length > 0 && (
                 <TouchableOpacity
                   onPress={() => toggleSubMenu(item.id)}
                   style={{
@@ -94,7 +94,7 @@ export default function CustomDrawer({ navigation }) {
           </View>
         )
       })}
-    </View>
+    </ScrollView>
   )
 }
 

@@ -1,5 +1,5 @@
 import { DrawerActions, useNavigation } from '@react-navigation/native'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 export default function Header() {
@@ -12,7 +12,18 @@ export default function Header() {
             <Path d='M904 160H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0 624H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0-312H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8z' />
           </Svg>
         </TouchableOpacity>
-        <Text>Beauty Box</Text>
+
+        <View style={{ flexGrow: 1 }}>
+          <Image
+            style={{
+              width: '100%',
+              marginHorizontal: 10,
+              height: 50,
+              objectFit: 'cover'
+            }}
+            source={{ uri: 'https://image.hsv-tech.io/300x0/bbx/common/50a26167-9341-4be8-8aba-9682d3b4a916.webp' }}
+          />
+        </View>
         <View>
           <Svg width='28' height='28' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='black' viewBox='0 0 24 24'>
             <Path

@@ -1,11 +1,13 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-import { useOrder } from '../../src/context/OrderContext'
+import { useOrder } from '../../src/context'
+import { getStatusColor } from '../../src/utils/order'
+import { getOrderById } from '../../utils/order'
 
 const OrderDetailsScreen = ({ route, navigation }) => {
   const { orderId } = route.params
-  const { getOrderById } = useOrder()
-  const order = getOrderById(orderId)
+  const { orders } = useOrder()
+  const order = getOrderById(orders, orderId)
 
   if (!order) {
     return (
@@ -16,26 +18,6 @@ const OrderDetailsScreen = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
     )
-  }
-
-  const formatDate = (date) => {
-    const d = new Date(date)
-    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
-  }
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'processing':
-        return '#FFC107'
-      case 'shipped':
-        return '#2196F3'
-      case 'delivered':
-        return '#4CAF50'
-      case 'cancelled':
-        return '#F44336'
-      default:
-        return '#9E9E9E'
-    }
   }
 
   return (

@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { BackHandler, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 import { useOrder } from '../../src/context/OrderContext'
+import { formatCurrency, formatOrderDate, formatShippingAddress } from '../../src/utils/order'
 
 const OrderConfirmationScreen = ({ navigation, route }) => {
   const { orderId } = route.params
@@ -49,17 +50,15 @@ const OrderConfirmationScreen = ({ navigation, route }) => {
         </View>
         <View style={styles.orderInfoRow}>
           <Text style={styles.orderInfoLabel}>Date:</Text>
-          <Text style={styles.orderInfoValue}>{new Date(order.createdAt).toLocaleDateString()}</Text>
+          <Text style={styles.orderInfoValue}>{formatOrderDate(order.createdAt)}</Text>
         </View>
         <View style={styles.orderInfoRow}>
           <Text style={styles.orderInfoLabel}>Total Amount:</Text>
-          <Text style={styles.orderInfoValue}>${order.total.toFixed(2)}</Text>
+          <Text style={styles.orderInfoValue}>{formatCurrency(order.total)}</Text>
         </View>
         <View style={styles.orderInfoRow}>
           <Text style={styles.orderInfoLabel}>Shipping Address:</Text>
-          <Text style={styles.orderInfoValue}>
-            {`${order.shippingDetails.address}, ${order.shippingDetails.city}, ${order.shippingDetails.country}`}
-          </Text>
+          <Text style={styles.orderInfoValue}>{formatShippingAddress(order.shippingDetails)}</Text>
         </View>
       </View>
 

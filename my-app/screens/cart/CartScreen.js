@@ -1,8 +1,9 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
-import { useEffect, useState, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { FlatList, Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { CheckBox } from 'react-native-elements'
+
+import { loadCartItems, removeCartItem, updateItemQuantity } from '../../src/utils/cart'
 
 export default function CartScreen() {
   const [cart, setCart] = useState([])
@@ -14,21 +15,8 @@ export default function CartScreen() {
   }, [])
 
   const loadCart = async () => {
-    try {
-      const cartData = await AsyncStorage.getItem('cart')
-      setCart(JSON.parse(cartData) || [])
-    } catch (error) {
-      console.error('Error loading cart:', error)
-    }
-  }
-
-  const saveCart = async (updatedCart) => {
-    try {
-      await AsyncStorage.setItem('cart', JSON.stringify(updatedCart))
-      setCart(updatedCart)
-    } catch (error) {
-      console.error('Error saving cart:', error)
-    }
+    const cartData = await loadCartItems()
+    setCart(cartData)
   }
 
   const toggleCheckbox = (id) => {
@@ -38,22 +26,14 @@ export default function CartScreen() {
     }))
   }
 
-  const updateQuantity = (productId, newQuantity) => {
-    if (newQuantity < 1 || newQuantity > 10) return
-
-    const updatedCart = cart.map((item) => {
-      if (item.product._id === productId) {
-        return { ...item, quantity: newQuantity }
-      }
-      return item
-    })
-
-    saveCart(updatedCart)
+  const updateQuantity = async (productId, newQuantity) => {
+    const updatedCart = await updateItemQuantity(cart, productId, newQuantity)
+    if (updatedCart) setCart(updatedCart)
   }
 
-  const removeItem = (productId) => {
-    const updatedCart = cart.filter((item) => item.product._id !== productId)
-    saveCart(updatedCart)
+  const removeItem = async (productId) => {
+    const updatedCart = await removeCartItem(cart, productId)
+    if (updatedCart) setCart(updatedCart)
   }
 
   const renderItem = useCallback(

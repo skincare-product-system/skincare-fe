@@ -1,31 +1,12 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 import { useOrder } from '../../src/context/OrderContext'
+import { formatDate, getStatusColor } from '../../src/utils/order'
 
-const OrderHistoryScreen = ({ navigation }) => {
-  const { orders } = useOrder()
+const OrderItem = ({ item, navigation }) => {
+  const showRefundButton = item.status !== 'cancelled' && !item.refundStatus
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
-  }
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'processing':
-        return '#FFC107'
-      case 'shipped':
-        return '#2196F3'
-      case 'delivered':
-        return '#4CAF50'
-      case 'cancelled':
-        return '#F44336'
-      default:
-        return '#9E9E9E'
-    }
-  }
-
-  const renderOrderItem = ({ item }) => (
+  return (
     <TouchableOpacity
       style={styles.orderItem}
       onPress={() => navigation.navigate('OrderDetails', { orderId: item.id })}
@@ -59,7 +40,8 @@ const OrderHistoryScreen = ({ navigation }) => {
         >
           <Text style={styles.trackButtonText}>Track</Text>
         </TouchableOpacity>
-        {item.status !== 'cancelled' && !item.refundStatus && (
+
+        {showRefundButton && (
           <TouchableOpacity
             style={styles.refundButton}
             onPress={() => navigation.navigate('RequestRefund', { orderId: item.id })}
@@ -67,6 +49,7 @@ const OrderHistoryScreen = ({ navigation }) => {
             <Text style={styles.refundButtonText}>Return/Refund</Text>
           </TouchableOpacity>
         )}
+
         {item.refundStatus && (
           <View style={styles.refundStatusBadge}>
             <Text style={styles.refundStatusText}>Refund {item.refundStatus}</Text>
@@ -75,6 +58,10 @@ const OrderHistoryScreen = ({ navigation }) => {
       </View>
     </TouchableOpacity>
   )
+}
+
+const OrderHistoryScreen = ({ navigation }) => {
+  const { orders } = useOrder()
 
   return (
     <View style={styles.container}>
@@ -88,7 +75,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       ) : (
         <FlatList
           data={orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))}
-          renderItem={renderOrderItem}
+          renderItem={({ item }) => <OrderItem item={item} navigation={navigation} />}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContainer}
         />

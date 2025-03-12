@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
-import { View, Text, ScrollView, Pressable, Image, TouchableOpacity } from 'react-native'
+import { Image, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 import categoryApi from '../src/apis/categories.api'
 

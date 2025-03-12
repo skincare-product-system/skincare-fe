@@ -13,7 +13,7 @@ export default function Header() {
         </View>
 
         <Feather name='box' size={30} color='#3D3D3D' />
-        <TouchableOpacity onPress={() => navigation.navigate('CartScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('StackNavigator', { screen: 'CartScreen' })}>
           <AntDesign name='shoppingcart' size={30} color='#3D3D3D' />
         </TouchableOpacity>
       </View>

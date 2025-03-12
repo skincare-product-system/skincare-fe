@@ -1,5 +1,5 @@
-import 'react-native-get-random-values'
 import { nanoid } from 'nanoid'
+import 'react-native-get-random-values'
 
 export const subFacialCareCategories = [
   { id: nanoid(), name: 'Kem dưỡng' },

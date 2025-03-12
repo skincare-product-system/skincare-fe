@@ -1,4 +1,4 @@
-import { View, Image, Dimensions, StyleSheet } from 'react-native'
+import { Dimensions, Image, StyleSheet, View } from 'react-native'
 import Carousel from 'react-native-reanimated-carousel'
 
 const { width } = Dimensions.get('window')

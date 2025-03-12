@@ -1,14 +1,15 @@
 import http from '../utils/http'
 
-const productUrl = '/products'
+const productUrl = '/api/products'
 const productApi = {
-  async getProducts(params) {
-    return await http.get(productUrl, {
-      params
-    })
+  async getProductsByCategoryId(categoryId) {
+    return await http.get(`${productUrl}?category_id=${categoryId}`)
   },
-  async getProductDetail(id) {
-    return await http.get(`${productUrl}/${id}`)
+  async getProductDetail(productId) {
+    return await http.get(`${productUrl}/${productId}`)
+  },
+  async getProductsByVariationId(variationId) {
+    return await http.get(`${productUrl}?variation_id=${variationId}`)
   }
 }
 export default productApi

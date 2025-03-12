@@ -12,8 +12,8 @@ export default function CustomDrawer({ navigation }) {
   useEffect(() => {
     async function getCategories() {
       try {
-        const result = await http.get('categories')
-        setCategory(result.data)
+        const result = await http.get('api/categories/all')
+        setCategory(result.data.result)
       } catch (error) {
         console.error('Lỗi khi fetch categories:', error)
       }
@@ -30,20 +30,20 @@ export default function CustomDrawer({ navigation }) {
 
   const renderCategory = (item) => {
     return (
-      <View key={item.id} style={{ marginBottom: 10 }}>
+      <View key={item._id} style={{ marginBottom: 10 }}>
         <TouchableOpacity
           onPress={() =>
             navigation.navigate('ProductList', {
-              name: item.name,
-              category: item.subCategories || []
+              item
             })
           }
+          style={{ padding: 10, borderRadius: 5 }}
         >
           <Text>{item.name}</Text>
         </TouchableOpacity>
 
-        {item.subCategories && item.subCategories?.length > 0 && (
-          <View style={{ marginLeft: 20 }}>{item.subCategories.map((subItem) => renderCategory(subItem))}</View>
+        {Array.isArray(item.subCate) && item.subCate.length > 0 && (
+          <View style={{ marginLeft: 20 }}>{item.subCate.map((subItem) => renderCategory(subItem))}</View>
         )}
       </View>
     )
@@ -52,15 +52,21 @@ export default function CustomDrawer({ navigation }) {
   return (
     <ScrollView style={{ padding: 20 }}>
       {category.map((item, index) => {
-        const isExpanded = expandedCategories[item.id] || false
+        const isExpanded = expandedCategories[item._id] || false
         return (
-          <View key={item.id + index} style={{ marginBottom: 10 }}>
+          <View key={item._id + index} style={{ marginBottom: 10 }}>
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate('ProductList', {
-                    name: item.name,
-                    category: item.subCategories || []
+                  navigation.navigate('StackNavigator', {
+                    screen: 'ProductList',
+                    params: {
+                      item,
+                      name: item.name,
+                      category: item.subCate || []
+                    }
+                    // name: item.name,
+                    // category: item.subCategories || []
                   })
                 }
                 style={{ paddingVertical: 10 }}
@@ -68,9 +74,9 @@ export default function CustomDrawer({ navigation }) {
                 <Text>{item.name}</Text>
               </TouchableOpacity>
 
-              {item.subCategories && item.subCategories.length > 0 && (
+              {item.subCate && item.subCate.length > 0 && (
                 <TouchableOpacity
-                  onPress={() => toggleSubMenu(item.id)}
+                  onPress={() => toggleSubMenu(item._id)}
                   style={{
                     padding: 10,
                     flexGrow: 1
@@ -88,7 +94,7 @@ export default function CustomDrawer({ navigation }) {
 
             {isExpanded && (
               <Animated.View style={{ paddingLeft: 20 }}>
-                {item.subCategories.map((subItem) => renderCategory(subItem))}
+                {item.subCate.map((subItem) => renderCategory(subItem))}
               </Animated.View>
             )}
           </View>

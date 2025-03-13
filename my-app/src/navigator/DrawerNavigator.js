@@ -3,6 +3,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer'
 import { CustomDrawer } from '../components'
 
 import StackNavigator from './StackNavigator'
+
 const Drawer = createDrawerNavigator()
 
 export default function DrawerNavigator() {

@@ -2,7 +2,7 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 
 import { useOrder } from '../../src/context'
 import { getStatusColor } from '../../src/utils/order'
-import { getOrderById } from '../../utils/order'
+import { getOrderById } from '../../src/utils/order'
 
 const OrderDetailsScreen = ({ route, navigation }) => {
   const { orderId } = route.params

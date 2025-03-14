@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Text, View, TouchableOpacity, FlatList } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import http from '../../../src/utils/http'
+import http from '../../src/utils/http'
 
 export default function WishlistScreen({ navigation }) {
   const [wishlist, setWishlist] = useState([])
@@ -28,11 +28,11 @@ export default function WishlistScreen({ navigation }) {
   }
 
   const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10, marginBottom: 10 }}>
       <TouchableOpacity
         onPress={() => navigation.navigate('ProductList', { name: item.name, category: item.subCategories || [] })}
       >
-        <Text style={styles.itemName}>{item.name}</Text>
+        <Text>{item.name}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => removeFromWishlist(item.id)}>
         <Icon name='delete' size={24} color='red' />
@@ -41,60 +41,23 @@ export default function WishlistScreen({ navigation }) {
   )
 
   return (
-    <View style={styles.container}>
+    <View style={{ padding: 20, flex: 1 }}>
       {/* Nút Back */}
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Icon name='arrow-back' size={24} color='#333' />
-        <Text style={styles.backText}>Quay lại</Text>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}
+      >
+        <Icon name='arrow-back' size={24} color='black' />
+        <Text style={{ marginLeft: 5, fontSize: 16 }}>Quay lại</Text>
       </TouchableOpacity>
 
       {/* Tiêu đề và danh sách */}
-      <Text style={styles.title}>Danh sách yêu thích</Text>
+      <Text style={{ fontSize: 24, marginBottom: 20 }}>Danh sách yêu thích</Text>
       {wishlist.length === 0 ? (
-        <Text style={styles.emptyText}>Chưa có dịch vụ nào trong danh sách yêu thích.</Text>
+        <Text>Chưa có dịch vụ nào trong danh sách yêu thích.</Text>
       ) : (
         <FlatList data={wishlist} renderItem={renderItem} keyExtractor={(item) => item.id} />
       )}
     </View>
   )
-}
-
-// CSS (Inline Styles) đặt ở dưới
-const styles = {
-  container: {
-    padding: 20,
-    flex: 1
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20
-  },
-  backText: {
-    marginLeft: 5,
-    fontSize: 16,
-    color: '#333'
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    color: '#333'
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center'
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    marginBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee'
-  },
-  itemName: {
-    fontSize: 16,
-    color: '#333'
-  }
 }

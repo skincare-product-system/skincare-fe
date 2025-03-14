@@ -1,204 +1,217 @@
-import { LinearGradient } from 'expo-linear-gradient'
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, StatusBar, SafeAreaView } from 'react-native'
-import Feather from 'react-native-vector-icons/Feather'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+/* eslint-disable no-console */
 
-// Define a consistent color palette
+import { Feather, MaterialIcons } from '@expo/vector-icons'
+import Entypo from '@expo/vector-icons/Entypo'
+import { useNavigation } from '@react-navigation/native'
+import { LinearGradient } from 'expo-linear-gradient'
+import { useState } from 'react'
+import { View, Text, TouchableOpacity, Alert, ScrollView, Image, StyleSheet } from 'react-native'
+
+import { useAuth } from '../src/context/AuthContext'
+
 const COLORS = {
-  primary: '#FF80AB',       // Main pink color
-  primaryDark: '#f26a8d',   // Darker pink for buttons and highlights
-  secondary: '#FCE4EC',     // Very light pink for backgrounds
-  accent: '#F06292',        // Medium pink for icons and accents
+  primary: '#FF80AB', // Main pink color
+  primaryDark: '#f26a8d', // Darker pink for buttons and highlights
+  secondary: '#FCE4EC', // Very light pink for backgrounds
+  accent: '#F06292', // Medium pink for icons and accents
   gradientStart: '#FFEBEE', // Lightest pink for gradient start
-  gradientEnd: '#F8BBD0',   // Light pink for gradient end
+  gradientEnd: '#F8BBD0', // Light pink for gradient end
   text: {
-    dark: '#424242',        // Dark text
-    medium: '#757575',      // Medium gray text
-    light: '#FFFFFF',       // White text
+    dark: '#424242', // Dark text
+    medium: '#757575', // Medium gray text
+    light: '#FFFFFF' // White text
   },
   background: {
-    main: '#FFF5F7',        // Main background color
-    card: '#FFFFFF',        // Card background
+    main: '#FFF5F7', // Main background color
+    card: '#FFFFFF' // Card background
   },
-  border: '#F8BBD0',        // Border color
+  border: '#F8BBD0' // Border color
 }
 
-const ProfileScreen = () => {
-  // Giả định trạng thái đăng nhập và thông tin người dùng
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [user, setUser] = useState({
-    name: 'Dĩm Phan',
-    email: 'diemphan@gmail.com',
-    avatar: 'https://i.pinimg.com/736x/c0/f9/c2/c0f9c2ffe8e7ff2ee292dbf6892d3b6a.jpg',
-    level: 'Kim cương',
-    points: 2850,
-  })
+export default function ProfileScreen() {
+  const nav = useNavigation()
+  const { isAuthenticated, profile, reset } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
 
-  // Toggle hàm này chỉ để demo, trong app thực sẽ dùng hệ thống đăng nhập thật
-  const toggleLogin = () => {
-    setIsLoggedIn(!isLoggedIn)
+  const handleTrackOrder = () => {
+    if (isAuthenticated) {
+      // nav.navigate('TrackOrderScreen')
+    } else {
+      Alert.alert('Thông báo', 'Vui lòng đăng nhập để kiểm tra đơn hàng.', [
+        {
+          text: 'Đăng nhập',
+          onPress: () => nav.navigate('StackNavigator', { screen: 'LoginScreen' })
+        },
+        {
+          text: 'Đóng'
+        }
+      ])
+    }
   }
-
-  // Render phần đăng nhập nếu chưa đăng nhập
-  const renderLoginSection = () => (
-    <View style={styles.loginContainer}>
-      <LinearGradient colors={[COLORS.gradientStart, COLORS.gradientEnd]} style={styles.loginGradient}>
-        <Image source={{ uri: 'https://i.pinimg.com/736x/c9/08/6a/c9086a109abf341b3d52de87b213e363.jpg' }} style={styles.loginLogo} resizeMode='contain' />
-        <Text style={styles.loginTitle}>Chào mừng bạn đến với GlamShop</Text>
-        <Text style={styles.loginSubtitle}>Đăng nhập để theo dõi đơn hàng và nhận nhiều ưu đãi hấp dẫn</Text>
-
-        <TouchableOpacity style={styles.loginButton} onPress={toggleLogin}>
-          <Text style={styles.loginButtonText}>Đăng nhập</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.registerButton}>
-          <Text style={styles.registerButtonText}>Đăng ký tài khoản mới</Text>
-        </TouchableOpacity>
-      </LinearGradient>
-    </View>
-  )
-
-  // Render phần thông tin người dùng sau khi đăng nhập
-  const renderUserProfile = () => (
-    <ScrollView style={styles.container}>
-      {/* Header với thông tin người dùng */}
-      <LinearGradient colors={[COLORS.gradientStart, COLORS.gradientEnd]} style={styles.headerGradient}>
-        <View style={styles.profileHeader}>
-          <View style={styles.profileInfo}>
-            <Image source={{ uri: user.avatar }} style={styles.avatar} />
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>{user.name}</Text>
-              <Text style={styles.userEmail}>{user.email}</Text>
-              <View style={styles.levelContainer}>
-                <FontAwesome name='diamond' size={14} color={COLORS.primaryDark} />
-                <Text style={styles.userLevel}>{user.level}</Text>
+  return (
+    <View>
+      {isAuthenticated ? (
+        <ScrollView style={styles.container}>
+          {/* Header với thông tin người dùng */}
+          <LinearGradient colors={[COLORS.gradientStart, COLORS.gradientEnd]} style={styles.headerGradient}>
+            <View style={styles.profileHeader}>
+              <View style={styles.profileInfo}>
+                <Image source={{ uri: profile.avatar_url }} style={styles.avatar} />
+                <View style={styles.userInfo}>
+                  <Text style={styles.userName}>{profile.username}</Text>
+                  <Text style={styles.userEmail}>{profile.email}</Text>
+                </View>
               </View>
             </View>
+          </LinearGradient>
+
+          {/* Phần theo dõi đơn hàng */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Đơn hàng của tôi</Text>
+            <View style={styles.orderTracking}>
+              <TouchableOpacity style={styles.orderStatus}>
+                <View style={styles.iconCircle}>
+                  <MaterialIcons name='receipt' size={20} color={COLORS.primaryDark} />
+                </View>
+                <Text style={styles.statusText}>Mới đặt</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.orderStatus}>
+                <View style={styles.iconCircle}>
+                  <MaterialIcons name='local-shipping' size={20} color={COLORS.primaryDark} />
+                </View>
+                <Text style={styles.statusText}>Đang xử lý</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.orderStatus}>
+                <View style={styles.iconCircle}>
+                  <MaterialIcons name='check-circle' size={20} color={COLORS.primaryDark} />
+                </View>
+                <Text style={styles.statusText}>Thành công</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.orderStatus}>
+                <View style={styles.iconCircle}>
+                  <MaterialIcons name='cancel' size={20} color={COLORS.primaryDark} />
+                </View>
+                <Text style={styles.statusText}>Đã hủy</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={styles.pointsContainer}>
-            <Text style={styles.pointsLabel}>Điểm tích lũy</Text>
-            <Text style={styles.pointsValue}>{user.points}</Text>
+          {/* Các tính năng khác */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Tài khoản</Text>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuIconContainer}>
+                <Feather name='heart' size={20} color={COLORS.primaryDark} />
+              </View>
+              <Text style={styles.menuText}>Sản phẩm yêu thích</Text>
+              <Feather name='chevron-right' size={20} color='#ccc' />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuIconContainer}>
+                <Feather name='star' size={20} color={COLORS.primaryDark} />
+              </View>
+              <Text style={styles.menuText}>Đánh giá sản phẩm</Text>
+              <Feather name='chevron-right' size={20} color='#ccc' />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuIconContainer}>
+                <Feather name='message-square' size={20} color={COLORS.primaryDark} />
+              </View>
+              <Text style={styles.menuText}>Lịch sử đánh giá</Text>
+              <Feather name='chevron-right' size={20} color='#ccc' />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuIconContainer}>
+                <Feather name='map-pin' size={20} color={COLORS.primaryDark} />
+              </View>
+              <Text style={styles.menuText}>Địa chỉ của tôi</Text>
+              <Feather name='chevron-right' size={20} color='#ccc' />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuIconContainer}>
+                <Feather name='gift' size={20} color={COLORS.primaryDark} />
+              </View>
+              <Text style={styles.menuText}>Mã giảm giá của tôi</Text>
+              <Feather name='chevron-right' size={20} color='#ccc' />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuIconContainer}>
+                <Feather name='bell' size={20} color={COLORS.primaryDark} />
+              </View>
+              <Text style={styles.menuText}>Thông báo</Text>
+              <Feather name='chevron-right' size={20} color='#ccc' />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuIconContainer}>
+                <Feather name='user' size={20} color={COLORS.primaryDark} />
+              </View>
+              <Text style={styles.menuText}>Thông tin tài khoản</Text>
+              <Feather name='chevron-right' size={20} color='#ccc' />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuIconContainer}>
+                <Feather name='help-circle' size={20} color={COLORS.primaryDark} />
+              </View>
+              <Text style={styles.menuText}>Trợ giúp & Hỗ trợ</Text>
+              <Feather name='chevron-right' size={20} color='#ccc' />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={styles.logoutButton} onPress={() => reset()}>
+            <Text style={styles.logoutButtonText}>Đăng xuất</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      ) : (
+        <View style={{ gap: 5 }}>
+          <View
+            style={{
+              backgroundColor: '#FADA7A',
+              flexDirection: 'row',
+              padding: 20,
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
+            <View style={{ width: '60%' }}>
+              <Text style={{ fontWeight: '500', fontSize: 16, marginBottom: 10 }}>Beauty Box Xin Chào</Text>
+              <Text>Đăng nhập để mua sắm và tra cứu đơn hàng của bạn.</Text>
+            </View>
+            <TouchableOpacity
+              style={{ backgroundColor: '#FFA725', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 30 }}
+              onPress={() => nav.navigate('LoginScreen')}
+            >
+              <Text style={{ color: 'white', fontWeight: '500' }}>Đăng nhập</Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              backgroundColor: 'white',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: 20
+            }}
+          >
+            <Text style={{ fontWeight: '500' }}>Đơn Hàng Của Bạn</Text>
+            <TouchableOpacity onPress={() => handleTrackOrder()} style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{ fontWeight: '500', color: '#D98324' }}>Kiểm tra đơn</Text>
+              <Entypo name='chevron-right' size={24} color='#D98324' />
+            </TouchableOpacity>
           </View>
         </View>
-      </LinearGradient>
-
-      {/* Phần theo dõi đơn hàng */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Đơn hàng của tôi</Text>
-        <View style={styles.orderTracking}>
-          <TouchableOpacity style={styles.orderStatus}>
-            <View style={styles.iconCircle}>
-              <MaterialIcons name='receipt' size={20} color={COLORS.primaryDark} />
-            </View>
-            <Text style={styles.statusText}>Mới đặt</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.orderStatus}>
-            <View style={styles.iconCircle}>
-              <MaterialIcons name='local-shipping' size={20} color={COLORS.primaryDark} />
-            </View>
-            <Text style={styles.statusText}>Đang xử lý</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.orderStatus}>
-            <View style={styles.iconCircle}>
-              <MaterialIcons name='check-circle' size={20} color={COLORS.primaryDark} />
-            </View>
-            <Text style={styles.statusText}>Thành công</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.orderStatus}>
-            <View style={styles.iconCircle}>
-              <MaterialIcons name='cancel' size={20} color={COLORS.primaryDark} />
-            </View>
-            <Text style={styles.statusText}>Đã hủy</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Các tính năng khác */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Tài khoản</Text>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Feather name='heart' size={20} color={COLORS.primaryDark} />
-          </View>
-          <Text style={styles.menuText}>Sản phẩm yêu thích</Text>
-          <Feather name='chevron-right' size={20} color='#ccc' />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Feather name='star' size={20} color={COLORS.primaryDark} />
-          </View>
-          <Text style={styles.menuText}>Đánh giá sản phẩm</Text>
-          <Feather name='chevron-right' size={20} color='#ccc' />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Feather name='message-square' size={20} color={COLORS.primaryDark} />
-          </View>
-          <Text style={styles.menuText}>Lịch sử đánh giá</Text>
-          <Feather name='chevron-right' size={20} color='#ccc' />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Feather name='map-pin' size={20} color={COLORS.primaryDark} />
-          </View>
-          <Text style={styles.menuText}>Địa chỉ của tôi</Text>
-          <Feather name='chevron-right' size={20} color='#ccc' />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Feather name='gift' size={20} color={COLORS.primaryDark} />
-          </View>
-          <Text style={styles.menuText}>Mã giảm giá của tôi</Text>
-          <Feather name='chevron-right' size={20} color='#ccc' />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Feather name='bell' size={20} color={COLORS.primaryDark} />
-          </View>
-          <Text style={styles.menuText}>Thông báo</Text>
-          <Feather name='chevron-right' size={20} color='#ccc' />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Feather name='user' size={20} color={COLORS.primaryDark} />
-          </View>
-          <Text style={styles.menuText}>Thông tin tài khoản</Text>
-          <Feather name='chevron-right' size={20} color='#ccc' />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <View style={styles.menuIconContainer}>
-            <Feather name='help-circle' size={20} color={COLORS.primaryDark} />
-          </View>
-          <Text style={styles.menuText}>Trợ giúp & Hỗ trợ</Text>
-          <Feather name='chevron-right' size={20} color='#ccc' />
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity style={styles.logoutButton} onPress={toggleLogin}>
-        <Text style={styles.logoutButtonText}>Đăng xuất</Text>
-      </TouchableOpacity>
-    </ScrollView>
-  )
-
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar backgroundColor={COLORS.gradientEnd} barStyle='dark-content' />
-      {isLoggedIn ? renderUserProfile() : renderLoginSection()}
-    </SafeAreaView>
+      )}
+    </View>
   )
 }
 
@@ -208,7 +221,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background.main
   },
   container: {
-    flex: 1,
     backgroundColor: COLORS.background.main
   },
   // Styles cho phần đăng nhập
@@ -406,5 +418,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   }
 })
-
-export default ProfileScreen

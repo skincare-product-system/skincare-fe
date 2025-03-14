@@ -2,15 +2,17 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useRoute } from '@react-navigation/native'
-import { ActivityIndicator, Image, Pressable, ScrollView, TextInput, TouchableOpacity } from 'react-native'
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, TextInput, TouchableOpacity } from 'react-native'
 import { View, Text } from 'react-native'
 import ActionSheet from 'react-native-actions-sheet'
 import Markdown from 'react-native-markdown-display'
+import Toast from 'react-native-toast-message'
 
-import productApi from '../src/apis/products.api'
-import { Header } from '../src/components'
-import ImageSlider from '../src/components/ImageSlider'
-import { formatNumber } from '../src/utils/utils'
+import productApi from '../../src/apis/products.api'
+import { Header } from '../../src/components'
+import ImageSlider from '../../src/components/ImageSlider'
+import { useCart } from '../../src/context/CartContext'
+import { formatNumber } from '../../src/utils/utils'
 
 const { useState, useEffect, useRef } = require('react')
 
@@ -26,6 +28,7 @@ export default function ProductDetailScreen() {
   const actionSheetRef = useRef(null)
   const [quantity, setQuantity] = useState(1)
   const [selectedVariantId, setSelectedVariantId] = useState(null)
+  const { cartTotal, setCartTotal } = useCart()
 
   const increaseQuantity = () => {
     if (quantity < product.quantity) {
@@ -50,6 +53,7 @@ export default function ProductDetailScreen() {
         if (variations.length > 0) {
           const combinedImages = variations[0].images.concat(variations[0].thumbnails)
           setImages(combinedImages)
+
           setProduct(variations[0]) // Đặt sản phẩm mặc định là variation đầu tiên
         }
 
@@ -120,16 +124,39 @@ export default function ProductDetailScreen() {
   }
 
   const handleAddToCart = async () => {
-    const cartData = await AsyncStorage.getItem('cart')
-    let cart = []
-    cart = cartData ? JSON.parse(cartData) : []
-    const index = cart.findIndex((item) => item.product._id === product._id)
-    if (index !== -1) {
-      cart[index].quantity += quantity
-    } else {
-      cart.push({ product, quantity })
+    try {
+      const cartData = await AsyncStorage.getItem('cart')
+      let cart = cartData ? JSON.parse(cartData) : []
+
+      // Kiểm tra sản phẩm đã có trong giỏ hàng chưa
+      const index = cart.findIndex((item) => item.product._id === product._id)
+
+      const currentQuantity = index !== -1 ? cart[index].quantity : 0
+
+      // Kiểm tra tổng số lượng sau khi thêm
+      let totalQuantity = currentQuantity + quantity
+
+      if (totalQuantity > product.quantity) {
+        Alert.alert('Thông báo', `Số lượng bạn có thể mua tối đa cho sản phẩm này là ${product.quantity}.`)
+        return
+      }
+
+      if (index !== -1) {
+        cart[index].quantity = totalQuantity
+      } else {
+        cart.push({ product, quantity })
+      }
+      setCartTotal(cartTotal + 1)
+      await AsyncStorage.setItem('cart', JSON.stringify(cart))
+
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'Sản phẩm đã được thêm vào giỏ hàng!'
+      })
+    } catch (error) {
+      console.error('Lỗi khi thêm vào giỏ hàng:', error)
     }
-    await AsyncStorage.setItem('cart', JSON.stringify(cart))
   }
 
   const handleChangeBgColor = (variantId) => {
@@ -170,8 +197,6 @@ export default function ProductDetailScreen() {
                             backgroundColor: selectedVariantId === item ? '#FADA7A' : '#F6F0F0'
                           }}
                           onPress={() => {
-                            console.log(123)
-
                             handleChangeBgColor(item)
                             handleSelectVariation(key, item)
                           }}
@@ -351,7 +376,15 @@ export default function ProductDetailScreen() {
               <TextInput
                 value={quantity.toString()}
                 keyboardType='numeric'
-                onChangeText={(text) => setQuantity(Number(text) || 1)}
+                // chặn nhập giá trị âm, giá trị lớn hơn số lượng sản phẩm
+                onChangeText={(text) => {
+                  let value = parseInt(text) || 1
+                  if (value > product.quantity) {
+                    value = product.quantity
+                  }
+                  value = Math.min(Math.max(value, 1), product.quantity)
+                  setQuantity(value)
+                }}
                 style={{
                   width: 40,
                   height: 40,
@@ -379,7 +412,7 @@ export default function ProductDetailScreen() {
                 <TouchableOpacity
                   onPress={increaseQuantity}
                   disabled={quantity >= 10}
-                  style={{ opacity: quantity >= 10 ? 0.5 : 1 }}
+                  style={{ opacity: quantity >= product.quantity ? 0.5 : 1 }}
                 >
                   <Text style={{ fontSize: 20, color: '#4B5563' }}>+</Text>
                 </TouchableOpacity>
@@ -398,7 +431,9 @@ export default function ProductDetailScreen() {
                 alignItems: 'center',
                 marginTop: 20
               }}
-              onPress={() => handleAddToCart()}
+              onPress={() => {
+                handleAddToCart()
+              }}
             >
               <Text style={{ color: 'white', fontWeight: '500' }}>Thêm vào giỏ</Text>
             </TouchableOpacity>

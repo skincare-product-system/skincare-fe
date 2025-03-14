@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { useNavigation } from '@react-navigation/native'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
+
 import authApi from '../src/apis/auth.api'
 
 const { useState } = require('react')
@@ -14,9 +15,7 @@ export default function RegisterScreen() {
   const [errors, setErrors] = useState({})
 
   const handleRegister = async () => {
-    console.log(123)
     const response = await authApi.register(email, password, username, phone)
-    console.log(response)
   }
   return (
     <View style={{ padding: 20 }}>

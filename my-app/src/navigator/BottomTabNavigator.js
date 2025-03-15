@@ -3,7 +3,9 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
-import { CategoryScreen, HomeScreen, ProfileScreen } from '../../screens'
+import { CategoryScreen, HomeScreen } from '../screens'
+
+import AccountNavigator from './AccountNavigator'
 
 const Tab = createBottomTabNavigator()
 export default function BottomTabNavigator() {
@@ -13,7 +15,7 @@ export default function BottomTabNavigator() {
         name='Home'
         options={{
           tabBarIcon: ({ color }) => <Ionicons name='home' size={35} color={color} />,
-          title: 'Trang Chủ'
+          title: 'Trang Chủ',
         }}
         component={HomeScreen}
       />
@@ -21,18 +23,18 @@ export default function BottomTabNavigator() {
         name='CategoryScreen'
         options={{
           tabBarIcon: ({ color }) => <MaterialIcons name='category' size={35} color={color} />,
-          title: 'Danh Mục'
+          title: 'Danh Mục',
         }}
         component={CategoryScreen}
       />
       <Tab.Screen
-        name='ProfileScreen'
+        name='AccountNavigator'
         options={{
           tabBarIcon: ({ color }) => <EvilIcons name='user' size={35} color={color} />,
-          title: 'Tài Khoản'
+          title: 'Tài Khoản',
         }}
-        component={ProfileScreen}
-      />
+        component={AccountNavigator}
+      /> 
     </Tab.Navigator>
   )
 }

@@ -325,6 +325,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
+    paddingVertical: 16,
     paddingTop: 50,
     paddingBottom: 16
   },
@@ -344,7 +345,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8
   },
   tabsContentContainer: {
-    paddingVertical: 8
+    // paddingVertical: 16
   },
   tab: {
     flexDirection: 'row',

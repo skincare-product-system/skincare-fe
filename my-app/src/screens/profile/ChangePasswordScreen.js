@@ -1,16 +1,15 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'
-import * as ImagePicker from 'expo-image-picker'
+import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Alert, Modal, ActivityIndicator } from 'react-native'
+import { useState } from 'react'
+import { ActivityIndicator, Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
-import { styles, COLORS } from '../../styles/styles'
+import { COLORS, styles } from '../../styles/styles'
 
 export default function ChangePasswordScreen({ navigation }) {
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmNewPassword: '',
+    confirmNewPassword: ''
   })
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
@@ -24,7 +23,7 @@ export default function ChangePasswordScreen({ navigation }) {
   const handleInputChange = (field, value) => {
     setFormData({
       ...formData,
-      [field]: value,
+      [field]: value
     })
   }
 
@@ -100,8 +99,15 @@ export default function ChangePasswordScreen({ navigation }) {
                 secureTextEntry={!showCurrentPassword}
                 placeholder='Nhập mật khẩu hiện tại'
               />
-              <TouchableOpacity style={styles.passwordVisibilityButton} onPress={() => setShowCurrentPassword(!showCurrentPassword)}>
-                <Ionicons name={showCurrentPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={COLORS.text.medium} />
+              <TouchableOpacity
+                style={styles.passwordVisibilityButton}
+                onPress={() => setShowCurrentPassword(!showCurrentPassword)}
+              >
+                <Ionicons
+                  name={showCurrentPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={20}
+                  color={COLORS.text.medium}
+                />
               </TouchableOpacity>
             </View>
             <TouchableOpacity style={styles.forgotPasswordButton} onPress={() => setForgotPasswordModal(true)}>
@@ -119,8 +125,15 @@ export default function ChangePasswordScreen({ navigation }) {
                 secureTextEntry={!showNewPassword}
                 placeholder='Nhập mật khẩu mới'
               />
-              <TouchableOpacity style={styles.passwordVisibilityButton} onPress={() => setShowNewPassword(!showNewPassword)}>
-                <Ionicons name={showNewPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={COLORS.text.medium} />
+              <TouchableOpacity
+                style={styles.passwordVisibilityButton}
+                onPress={() => setShowNewPassword(!showNewPassword)}
+              >
+                <Ionicons
+                  name={showNewPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={20}
+                  color={COLORS.text.medium}
+                />
               </TouchableOpacity>
             </View>
             <Text style={styles.passwordHint}>Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số</Text>
@@ -136,8 +149,15 @@ export default function ChangePasswordScreen({ navigation }) {
                 secureTextEntry={!showConfirmPassword}
                 placeholder='Nhập lại mật khẩu mới'
               />
-              <TouchableOpacity style={styles.passwordVisibilityButton} onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                <Ionicons name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={COLORS.text.medium} />
+              <TouchableOpacity
+                style={styles.passwordVisibilityButton}
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                <Ionicons
+                  name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={20}
+                  color={COLORS.text.medium}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -198,7 +218,9 @@ export default function ChangePasswordScreen({ navigation }) {
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.modalText}>Mã OTP đã được gửi đến số điện thoại {phone}. Vui lòng nhập mã để tiếp tục.</Text>
+            <Text style={styles.modalText}>
+              Mã OTP đã được gửi đến số điện thoại {phone}. Vui lòng nhập mã để tiếp tục.
+            </Text>
 
             <View style={styles.formGroup}>
               <Text style={styles.formLabel}>Mã OTP</Text>
@@ -220,7 +242,11 @@ export default function ChangePasswordScreen({ navigation }) {
             </View>
 
             <TouchableOpacity style={styles.saveButton} onPress={handleVerifyOTP} disabled={loading}>
-              {loading ? <ActivityIndicator size='small' color={COLORS.text.light} /> : <Text style={styles.saveButtonText}>Xác nhận</Text>}
+              {loading ? (
+                <ActivityIndicator size='small' color={COLORS.text.light} />
+              ) : (
+                <Text style={styles.saveButtonText}>Xác nhận</Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>

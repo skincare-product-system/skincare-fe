@@ -1,10 +1,10 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Alert, Modal, ActivityIndicator } from 'react-native'
+import { useState } from 'react'
+import { ActivityIndicator, Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
-import { styles, COLORS } from '../../styles/styles'
+import { COLORS, styles } from '../../styles/styles'
 
 // Màn hình chỉnh sửa thông tin cá nhân
 export default function UserInformation({ route, navigation }) {
@@ -14,7 +14,7 @@ export default function UserInformation({ route, navigation }) {
     email: user.email,
     phone: user.phone,
     birthDate: '01/01/1990',
-    gender: 'Nữ',
+    gender: 'Nữ'
   })
   const [avatar, setAvatar] = useState(user.avatar)
   const [loading, setLoading] = useState(false)
@@ -22,7 +22,7 @@ export default function UserInformation({ route, navigation }) {
   const handleInputChange = (field, value) => {
     setFormData({
       ...formData,
-      [field]: value,
+      [field]: value
     })
   }
 
@@ -38,7 +38,7 @@ export default function UserInformation({ route, navigation }) {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.5,
+      quality: 0.5
     })
 
     if (!result.canceled) {
@@ -52,7 +52,9 @@ export default function UserInformation({ route, navigation }) {
     // Giả lập API call
     setTimeout(() => {
       setLoading(false)
-      Alert.alert('Thành công', 'Thông tin cá nhân đã được cập nhật.', [{ text: 'OK', onPress: () => navigation.goBack() }])
+      Alert.alert('Thành công', 'Thông tin cá nhân đã được cập nhật.', [
+        { text: 'OK', onPress: () => navigation.goBack() }
+      ])
     }, 1000)
   }
   const handleChangePassword = () => {
@@ -79,7 +81,11 @@ export default function UserInformation({ route, navigation }) {
         <View style={styles.formContainer}>
           <View style={styles.formGroup}>
             <Text style={styles.formLabel}>Họ và tên</Text>
-            <TextInput style={styles.formInput} value={formData.name} onChangeText={(value) => handleInputChange('name', value)} />
+            <TextInput
+              style={styles.formInput}
+              value={formData.name}
+              onChangeText={(value) => handleInputChange('name', value)}
+            />
           </View>
 
           <View style={styles.formGroup}>
@@ -115,8 +121,14 @@ export default function UserInformation({ route, navigation }) {
             <Text style={styles.formLabel}>Giới tính</Text>
             <View style={styles.radioContainer}>
               {['Nam', 'Nữ', 'Khác'].map((option) => (
-                <TouchableOpacity key={option} style={styles.radioOption} onPress={() => handleInputChange('gender', option)}>
-                  <View style={styles.radioCircle}>{formData.gender === option && <View style={styles.radioSelected} />}</View>
+                <TouchableOpacity
+                  key={option}
+                  style={styles.radioOption}
+                  onPress={() => handleInputChange('gender', option)}
+                >
+                  <View style={styles.radioCircle}>
+                    {formData.gender === option && <View style={styles.radioSelected} />}
+                  </View>
                   <Text style={styles.radioText}>{option}</Text>
                 </TouchableOpacity>
               ))}
@@ -130,10 +142,13 @@ export default function UserInformation({ route, navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={loading}>
-          {loading ? <ActivityIndicator size='small' color={COLORS.text.light} /> : <Text style={styles.saveButtonText}>Lưu thay đổi</Text>}
+          {loading ? (
+            <ActivityIndicator size='small' color={COLORS.text.light} />
+          ) : (
+            <Text style={styles.saveButtonText}>Lưu thay đổi</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </LinearGradient>
   )
 }
-

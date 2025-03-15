@@ -15,7 +15,7 @@ export default function BottomTabNavigator() {
         name='Home'
         options={{
           tabBarIcon: ({ color }) => <Ionicons name='home' size={35} color={color} />,
-          title: 'Trang Chủ',
+          title: 'Trang Chủ'
         }}
         component={HomeScreen}
       />
@@ -23,7 +23,7 @@ export default function BottomTabNavigator() {
         name='CategoryScreen'
         options={{
           tabBarIcon: ({ color }) => <MaterialIcons name='category' size={35} color={color} />,
-          title: 'Danh Mục',
+          title: 'Danh Mục'
         }}
         component={CategoryScreen}
       />
@@ -31,10 +31,10 @@ export default function BottomTabNavigator() {
         name='AccountNavigator'
         options={{
           tabBarIcon: ({ color }) => <EvilIcons name='user' size={35} color={color} />,
-          title: 'Tài Khoản',
+          title: 'Tài Khoản'
         }}
         component={AccountNavigator}
-      /> 
+      />
     </Tab.Navigator>
   )
 }

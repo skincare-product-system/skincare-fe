@@ -1,16 +1,15 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'
-import * as ImagePicker from 'expo-image-picker'
+import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Alert, Modal, ActivityIndicator } from 'react-native'
+import { useState } from 'react'
+import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
-import { styles, COLORS } from '../../styles/styles'
+import { COLORS, styles } from '../../styles/styles'
 
 export default function ResetPasswordScreen({ route, navigation }) {
   const { phone } = route.params
   const [formData, setFormData] = useState({
     newPassword: '',
-    confirmNewPassword: '',
+    confirmNewPassword: ''
   })
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -19,7 +18,7 @@ export default function ResetPasswordScreen({ route, navigation }) {
   const handleInputChange = (field, value) => {
     setFormData({
       ...formData,
-      [field]: value,
+      [field]: value
     })
   }
 
@@ -40,7 +39,9 @@ export default function ResetPasswordScreen({ route, navigation }) {
     // Giả lập API call
     setTimeout(() => {
       setLoading(false)
-      Alert.alert('Thành công', 'Mật khẩu đã được đặt lại thành công.', [{ text: 'OK', onPress: () => navigation.navigate('Account') }])
+      Alert.alert('Thành công', 'Mật khẩu đã được đặt lại thành công.', [
+        { text: 'OK', onPress: () => navigation.navigate('Account') }
+      ])
     }, 1000)
   }
 
@@ -74,8 +75,15 @@ export default function ResetPasswordScreen({ route, navigation }) {
                 secureTextEntry={!showNewPassword}
                 placeholder='Nhập mật khẩu mới'
               />
-              <TouchableOpacity style={styles.passwordVisibilityButton} onPress={() => setShowNewPassword(!showNewPassword)}>
-                <Ionicons name={showNewPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={COLORS.text.medium} />
+              <TouchableOpacity
+                style={styles.passwordVisibilityButton}
+                onPress={() => setShowNewPassword(!showNewPassword)}
+              >
+                <Ionicons
+                  name={showNewPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={20}
+                  color={COLORS.text.medium}
+                />
               </TouchableOpacity>
             </View>
             <Text style={styles.passwordHint}>Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số</Text>
@@ -91,8 +99,15 @@ export default function ResetPasswordScreen({ route, navigation }) {
                 secureTextEntry={!showConfirmPassword}
                 placeholder='Nhập lại mật khẩu mới'
               />
-              <TouchableOpacity style={styles.passwordVisibilityButton} onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-                <Ionicons name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={COLORS.text.medium} />
+              <TouchableOpacity
+                style={styles.passwordVisibilityButton}
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                <Ionicons
+                  name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={20}
+                  color={COLORS.text.medium}
+                />
               </TouchableOpacity>
             </View>
           </View>

@@ -1,18 +1,18 @@
-import { Ionicons, MaterialIcons, AntDesign } from '@expo/vector-icons'
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
-  StyleSheet,
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
+  ActivityIndicator,
   Alert,
-  Switch,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native'
 
 import { COLORS } from '../../styles/styles'
@@ -26,7 +26,7 @@ export default function MyAddressScreen({ navigation }) {
       address: '123 Đường Lê Lợi, Phường Bến Nghé',
       district: 'Quận 1',
       city: 'TP. Hồ Chí Minh',
-      isDefault: true,
+      isDefault: true
     },
     {
       id: '2',
@@ -35,8 +35,8 @@ export default function MyAddressScreen({ navigation }) {
       address: '456 Đường Nguyễn Huệ, Phường Bến Nghé',
       district: 'Quận 1',
       city: 'TP. Hồ Chí Minh',
-      isDefault: false,
-    },
+      isDefault: false
+    }
   ])
 
   const [editMode, setEditMode] = useState(false)
@@ -95,7 +95,7 @@ export default function MyAddressScreen({ navigation }) {
         address: formAddress,
         district: formDistrict,
         city: formCity,
-        isDefault: formIsDefault,
+        isDefault: formIsDefault
       }
 
       let updatedAddresses
@@ -112,7 +112,7 @@ export default function MyAddressScreen({ navigation }) {
       if (formIsDefault) {
         updatedAddresses = updatedAddresses.map((addr) => ({
           ...addr,
-          isDefault: addr.id === newAddress.id,
+          isDefault: addr.id === newAddress.id
         }))
       }
 
@@ -127,7 +127,7 @@ export default function MyAddressScreen({ navigation }) {
     Alert.alert('Xác nhận', 'Bạn có chắc chắn muốn xóa địa chỉ này?', [
       {
         text: 'Hủy',
-        style: 'cancel',
+        style: 'cancel'
       },
       {
         text: 'Xóa',
@@ -146,8 +146,8 @@ export default function MyAddressScreen({ navigation }) {
             setAddresses(updatedAddresses)
             setIsLoading(false)
           }, 1000)
-        },
-      },
+        }
+      }
     ])
   }
 
@@ -233,7 +233,11 @@ export default function MyAddressScreen({ navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleSave} disabled={isLoading}>
-            {isLoading ? <ActivityIndicator color={COLORS.text.light} size='small' /> : <Text style={styles.saveButtonText}>Lưu</Text>}
+            {isLoading ? (
+              <ActivityIndicator color={COLORS.text.light} size='small' />
+            ) : (
+              <Text style={styles.saveButtonText}>Lưu</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -316,18 +320,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 16
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 20
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: COLORS.text.dark,
+    color: COLORS.text.dark
   },
   addButton: {
     flexDirection: 'row',
@@ -335,34 +339,34 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: 8
   },
   addButtonText: {
     color: COLORS.text.light,
     fontWeight: '600',
-    marginLeft: 4,
+    marginLeft: 4
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   emptyText: {
     fontSize: 16,
     color: COLORS.text.medium,
     marginTop: 16,
-    marginBottom: 24,
+    marginBottom: 24
   },
   emptyAddButton: {
     backgroundColor: COLORS.primary,
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 8
   },
   emptyAddButtonText: {
     color: COLORS.text.light,
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: 16
   },
   addressCard: {
     backgroundColor: COLORS.background.card,
@@ -373,61 +377,61 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 4
   },
   addressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   nameContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   name: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: COLORS.text.dark,
+    color: COLORS.text.dark
   },
   defaultBadge: {
     backgroundColor: COLORS.secondary,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
-    marginLeft: 8,
+    marginLeft: 8
   },
   defaultText: {
     fontSize: 12,
     color: COLORS.primaryDark,
-    fontWeight: '500',
+    fontWeight: '500'
   },
   actionButtons: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   editButton: {
-    marginRight: 12,
+    marginRight: 12
   },
   deleteButton: {
-    marginLeft: 8,
+    marginLeft: 8
   },
   divider: {
     height: 1,
     backgroundColor: COLORS.border,
-    marginVertical: 12,
+    marginVertical: 12
   },
   addressDetails: {
-    marginTop: 8,
+    marginTop: 8
   },
   detailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 6
   },
   detailText: {
     fontSize: 14,
     color: COLORS.text.medium,
-    marginLeft: 8,
+    marginLeft: 8
   },
   formContainer: {
     flex: 1,
@@ -438,22 +442,22 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 4
   },
   formTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: COLORS.text.dark,
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   inputGroup: {
-    marginBottom: 12,
+    marginBottom: 12
   },
   inputLabel: {
     fontSize: 14,
     color: COLORS.text.dark,
-    marginBottom: 4,
+    marginBottom: 4
   },
   textInput: {
     backgroundColor: COLORS.background.main,
@@ -463,50 +467,50 @@ const styles = StyleSheet.create({
     fontSize: 14,
     borderWidth: 1,
     borderColor: COLORS.border,
-    color: COLORS.text.dark,
+    color: COLORS.text.dark
   },
   switchContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 20
   },
   switchLabel: {
     fontSize: 14,
-    color: COLORS.text.dark,
+    color: COLORS.text.dark
   },
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
+    marginTop: 16
   },
   button: {
     flex: 1,
     paddingVertical: 12,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   cancelButton: {
     backgroundColor: COLORS.background.main,
     borderWidth: 1,
     borderColor: COLORS.border,
-    marginRight: 8,
+    marginRight: 8
   },
   cancelButtonText: {
     color: COLORS.text.dark,
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 14
   },
   saveButton: {
     backgroundColor: COLORS.primary,
-    marginLeft: 8,
+    marginLeft: 8
   },
   saveButtonText: {
     color: COLORS.text.light,
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 14
   },
   bottomSpacer: {
-    height: 20,
-  },
+    height: 20
+  }
 })

@@ -1,7 +1,16 @@
-import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons'
+import { Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useState } from 'react'
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Image, ActivityIndicator, Linking } from 'react-native'
+import { useState } from 'react'
+import {
+  ActivityIndicator,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native'
 
 import { COLORS } from '../../styles/styles'
 
@@ -32,28 +41,28 @@ export default function HelpSupportScreen({ navigation }) {
     {
       question: 'Làm thế nào để theo dõi đơn hàng của tôi?',
       answer:
-        'Bạn có thể theo dõi đơn hàng bằng cách vào mục "Đơn hàng của tôi" trong phần "Tài khoản". Tại đây, bạn sẽ thấy trạng thái hiện tại của tất cả các đơn hàng của mình.',
+        'Bạn có thể theo dõi đơn hàng bằng cách vào mục "Đơn hàng của tôi" trong phần "Tài khoản". Tại đây, bạn sẽ thấy trạng thái hiện tại của tất cả các đơn hàng của mình.'
     },
     {
       question: 'Chính sách đổi trả như thế nào?',
       answer:
-        'Chúng tôi chấp nhận đổi trả trong vòng 14 ngày kể từ ngày nhận hàng với điều kiện sản phẩm còn nguyên vẹn, chưa qua sử dụng và còn đầy đủ bao bì. Vui lòng liên hệ với bộ phận hỗ trợ khách hàng để được hướng dẫn chi tiết.',
+        'Chúng tôi chấp nhận đổi trả trong vòng 14 ngày kể từ ngày nhận hàng với điều kiện sản phẩm còn nguyên vẹn, chưa qua sử dụng và còn đầy đủ bao bì. Vui lòng liên hệ với bộ phận hỗ trợ khách hàng để được hướng dẫn chi tiết.'
     },
     {
       question: 'Thời gian giao hàng là bao lâu?',
       answer:
-        'Thời gian giao hàng thông thường là 2-5 ngày làm việc tùy thuộc vào khu vực của bạn. Đối với các khu vực ngoại thành hoặc vùng sâu vùng xa, thời gian giao hàng có thể kéo dài hơn 1-2 ngày.',
+        'Thời gian giao hàng thông thường là 2-5 ngày làm việc tùy thuộc vào khu vực của bạn. Đối với các khu vực ngoại thành hoặc vùng sâu vùng xa, thời gian giao hàng có thể kéo dài hơn 1-2 ngày.'
     },
     {
       question: 'Làm cách nào để tôi biết sản phẩm phù hợp với làn da của mình?',
       answer:
-        'Bạn có thể sử dụng tính năng "Tư vấn da" trong ứng dụng của chúng tôi. Tính năng này sẽ phân tích loại da của bạn thông qua một bài kiểm tra ngắn và đề xuất các sản phẩm phù hợp.',
+        'Bạn có thể sử dụng tính năng "Tư vấn da" trong ứng dụng của chúng tôi. Tính năng này sẽ phân tích loại da của bạn thông qua một bài kiểm tra ngắn và đề xuất các sản phẩm phù hợp.'
     },
     {
       question: 'Tôi có thể thanh toán bằng những phương thức nào?',
       answer:
-        'Chúng tôi chấp nhận thanh toán qua thẻ tín dụng/ghi nợ, ví điện tử (MoMo, ZaloPay, VNPay), chuyển khoản ngân hàng và thanh toán khi nhận hàng (COD).',
-    },
+        'Chúng tôi chấp nhận thanh toán qua thẻ tín dụng/ghi nợ, ví điện tử (MoMo, ZaloPay, VNPay), chuyển khoản ngân hàng và thanh toán khi nhận hàng (COD).'
+    }
   ]
 
   const CONTACT_METHODS = [
@@ -61,20 +70,20 @@ export default function HelpSupportScreen({ navigation }) {
       icon: 'phone',
       title: 'Hotline',
       subtitle: '1800 xxxx',
-      action: () => Linking.openURL('tel:1800xxxx'),
+      action: () => Linking.openURL('tel:1800xxxx')
     },
     {
       icon: 'message',
       title: 'Tin nhắn',
       subtitle: 'Phản hồi trong 24h',
-      action: () => navigation.navigate('ChatSupport'),
+      action: () => navigation.navigate('ChatSupport')
     },
     {
       icon: 'mail',
       title: 'Email',
       subtitle: 'support@beautyapp.com',
-      action: () => Linking.openURL('mailto:support@beautyapp.com'),
-    },
+      action: () => Linking.openURL('mailto:support@beautyapp.com')
+    }
   ]
 
   return (
@@ -95,7 +104,11 @@ export default function HelpSupportScreen({ navigation }) {
             onChangeText={setQuery}
           />
           <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-            {isLoading ? <ActivityIndicator color={COLORS.text.light} /> : <Ionicons name='search' size={22} color={COLORS.text.light} />}
+            {isLoading ? (
+              <ActivityIndicator color={COLORS.text.light} />
+            ) : (
+              <Ionicons name='search' size={22} color={COLORS.text.light} />
+            )}
           </TouchableOpacity>
         </View>
 
@@ -152,21 +165,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 16
   },
   header: {
     marginBottom: 24,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: COLORS.text.dark,
-    marginBottom: 8,
+    marginBottom: 8
   },
   subtitle: {
     fontSize: 16,
-    color: COLORS.text.medium,
+    color: COLORS.text.medium
   },
   searchContainer: {
     flexDirection: 'row',
@@ -178,20 +191,20 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 4
   },
   searchInput: {
     flex: 1,
     paddingVertical: 12,
     paddingHorizontal: 16,
     fontSize: 16,
-    color: COLORS.text.dark,
+    color: COLORS.text.dark
   },
   searchButton: {
     backgroundColor: COLORS.primary,
     paddingHorizontal: 16,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   section: {
     backgroundColor: COLORS.background.card,
@@ -202,38 +215,38 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 4
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.text.dark,
-    marginBottom: 16,
+    marginBottom: 16
   },
   faqItem: {
     borderBottomWidth: 1,
     borderBottomColor: COLORS.secondary,
-    paddingVertical: 12,
+    paddingVertical: 12
   },
   faqHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   faqQuestion: {
     fontSize: 16,
     flex: 1,
-    color: COLORS.text.dark,
+    color: COLORS.text.dark
   },
   faqAnswer: {
     marginTop: 8,
     fontSize: 14,
     color: COLORS.text.medium,
-    lineHeight: 20,
+    lineHeight: 20
   },
   contactMethods: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   contactCard: {
     flex: 1,
@@ -241,7 +254,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginHorizontal: 4,
-    backgroundColor: COLORS.gradientStart,
+    backgroundColor: COLORS.gradientStart
   },
   iconContainer: {
     width: 48,
@@ -250,18 +263,18 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 8
   },
   contactTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: COLORS.text.dark,
-    marginVertical: 4,
+    marginVertical: 4
   },
   contactSubtitle: {
     fontSize: 12,
     color: COLORS.text.medium,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   feedbackSection: {
     backgroundColor: COLORS.background.card,
@@ -273,29 +286,29 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 4
   },
   feedbackTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.text.dark,
-    marginBottom: 8,
+    marginBottom: 8
   },
   feedbackSubtitle: {
     fontSize: 14,
     color: COLORS.text.medium,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 16
   },
   feedbackButton: {
     backgroundColor: COLORS.primary,
     paddingHorizontal: 32,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 8
   },
   feedbackButtonText: {
     color: COLORS.text.light,
     fontWeight: 'bold',
-    fontSize: 16,
-  },
+    fontSize: 16
+  }
 })

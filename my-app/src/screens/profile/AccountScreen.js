@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, StatusBar, SafeAreaView, Alert, Platform } from 'react-native'
+import { useState } from 'react'
+import { Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Feather from 'react-native-vector-icons/Feather'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -14,7 +14,7 @@ export default function AccountScreen({ navigation }) {
     email: 'diemphan@gmail.com',
     avatar: 'https://i.pinimg.com/736x/c0/f9/c2/c0f9c2ffe8e7ff2ee292dbf6892d3b6a.jpg',
     level: 'Kim cương',
-    points: 2850,
+    points: 2850
   })
 
   // Toggle hàm này chỉ để demo, trong app thực sẽ dùng hệ thống đăng nhập thật
@@ -226,41 +226,41 @@ export default function AccountScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.background.main,
+    backgroundColor: COLORS.background.main
   },
   container: {
     flex: 1,
-    backgroundColor: COLORS.background.main,
+    backgroundColor: COLORS.background.main
   },
   // Styles cho phần đăng nhập
   loginContainer: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20,
+    padding: 20
   },
   loginGradient: {
     borderRadius: 20,
     padding: 30,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   loginLogo: {
     width: 120,
     height: 120,
     marginBottom: 20,
-    borderRadius: 100,
+    borderRadius: 100
   },
   loginTitle: {
     fontSize: 22,
     fontWeight: 'bold',
     color: COLORS.text.dark,
     marginBottom: 10,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   loginSubtitle: {
     fontSize: 14,
     color: COLORS.text.medium,
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: 30
   },
   loginButton: {
     backgroundColor: COLORS.primary,
@@ -269,21 +269,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     width: '100%',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 15
   },
   loginButtonText: {
     color: COLORS.text.light,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   registerButton: {
     paddingVertical: 12,
     width: '100%',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   registerButtonText: {
     color: COLORS.primaryDark,
-    fontSize: 16,
+    fontSize: 16
   },
   // Styles cho phần profile sau khi đăng nhập
   headerGradient: {
@@ -291,62 +291,62 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     paddingHorizontal: 20,
     borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    borderBottomRightRadius: 30
   },
   profileHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   profileInfo: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   avatar: {
     width: 70,
     height: 70,
     borderRadius: 35,
     borderWidth: 3,
-    borderColor: COLORS.text.light,
+    borderColor: COLORS.text.light
   },
   userInfo: {
-    marginLeft: 15,
+    marginLeft: 15
   },
   userName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: COLORS.text.dark,
+    color: COLORS.text.dark
   },
   userEmail: {
     fontSize: 14,
     color: COLORS.text.medium,
-    marginTop: 2,
+    marginTop: 2
   },
   levelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 5
   },
   userLevel: {
     fontSize: 14,
     color: COLORS.primaryDark,
     marginLeft: 5,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   pointsContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 15,
     padding: 10,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   pointsLabel: {
     fontSize: 12,
-    color: COLORS.text.medium,
+    color: COLORS.text.medium
   },
   pointsValue: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: COLORS.primaryDark,
+    color: COLORS.primaryDark
   },
   section: {
     backgroundColor: COLORS.background.card,
@@ -357,25 +357,25 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 2
     },
     shadowOpacity: 0.05,
     shadowRadius: 5,
-    elevation: 3,
+    elevation: 3
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: COLORS.text.dark,
-    marginBottom: 15,
+    marginBottom: 15
   },
   orderTracking: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   orderStatus: {
     alignItems: 'center',
-    width: '22%',
+    width: '22%'
   },
   iconCircle: {
     width: 45,
@@ -384,19 +384,19 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 8
   },
   statusText: {
     fontSize: 12,
     color: COLORS.text.dark,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.secondary,
+    borderBottomColor: COLORS.secondary
   },
   menuIconContainer: {
     width: 35,
@@ -405,12 +405,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: 15
   },
   menuText: {
     flex: 1,
     fontSize: 15,
-    color: COLORS.text.dark,
+    color: COLORS.text.dark
   },
   logoutButton: {
     margin: 20,
@@ -419,11 +419,11 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderWidth: 1,
     borderColor: COLORS.primary,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   logoutButtonText: {
     color: COLORS.primary,
     fontSize: 16,
-    fontWeight: 'bold',
-  },
+    fontWeight: 'bold'
+  }
 })

@@ -1,7 +1,7 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Alert, Switch, FlatList, Modal } from 'react-native'
+import { useState } from 'react'
+import { Alert, FlatList, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native'
 
 import { COLORS } from '../../styles/styles'
 
@@ -13,7 +13,7 @@ export default function NotificationScreen({ navigation }) {
       message: 'Nhận ngay ưu đãi 30% cho tất cả các sản phẩm làm đẹp từ thương hiệu La Roche Posay.',
       time: '2 giờ trước',
       isRead: false,
-      type: 'promo',
+      type: 'promo'
     },
     {
       id: '2',
@@ -21,7 +21,7 @@ export default function NotificationScreen({ navigation }) {
       message: 'Đơn hàng của bạn đã được giao thành công. Hãy đánh giá sản phẩm để nhận thêm điểm thưởng.',
       time: '1 ngày trước',
       isRead: true,
-      type: 'order',
+      type: 'order'
     },
     {
       id: '3',
@@ -29,7 +29,7 @@ export default function NotificationScreen({ navigation }) {
       message: 'Bạn vừa nhận được phiếu quà tặng trị giá 200.000đ. Hạn sử dụng 30 ngày.',
       time: '3 ngày trước',
       isRead: false,
-      type: 'voucher',
+      type: 'voucher'
     },
     {
       id: '4',
@@ -37,23 +37,24 @@ export default function NotificationScreen({ navigation }) {
       message: 'Serum Vitamin C mới đã có mặt tại cửa hàng! Hiệu quả làm sáng da và chống lão hóa vượt trội.',
       time: '1 tuần trước',
       isRead: true,
-      type: 'product',
+      type: 'product'
     },
     {
       id: '5',
       title: 'Sinh nhật vui vẻ!',
-      message: 'Chúc mừng sinh nhật! Nhân dịp này, chúng tôi tặng bạn mã giảm giá đặc biệt HPBD20 giảm 20% cho đơn hàng tiếp theo.',
+      message:
+        'Chúc mừng sinh nhật! Nhân dịp này, chúng tôi tặng bạn mã giảm giá đặc biệt HPBD20 giảm 20% cho đơn hàng tiếp theo.',
       time: '2 tuần trước',
       isRead: true,
-      type: 'birthday',
-    },
+      type: 'birthday'
+    }
   ])
 
   const [notificationSettings, setNotificationSettings] = useState({
     promotions: true,
     orders: true,
     system: true,
-    newProducts: false,
+    newProducts: false
   })
 
   const [activeTab, setActiveTab] = useState('all')
@@ -85,7 +86,7 @@ export default function NotificationScreen({ navigation }) {
     Alert.alert('Xác nhận xóa', 'Bạn có chắc chắn muốn xóa thông báo này?', [
       {
         text: 'Hủy',
-        style: 'cancel',
+        style: 'cancel'
       },
       {
         text: 'Xóa',
@@ -93,8 +94,8 @@ export default function NotificationScreen({ navigation }) {
           const filteredNotifications = notifications.filter((item) => item.id !== id)
           setNotifications(filteredNotifications)
         },
-        style: 'destructive',
-      },
+        style: 'destructive'
+      }
     ])
   }
 
@@ -103,7 +104,9 @@ export default function NotificationScreen({ navigation }) {
       style={[styles.notificationItem, item.isRead ? styles.notificationRead : styles.notificationUnread]}
       onPress={() => markAsRead(item.id)}
     >
-      <View style={[styles.notificationIconContainer, { backgroundColor: `${getNotificationIcon(item.type).color}20` }]}>
+      <View
+        style={[styles.notificationIconContainer, { backgroundColor: `${getNotificationIcon(item.type).color}20` }]}
+      >
         <Ionicons name={getNotificationIcon(item.type).name} size={24} color={getNotificationIcon(item.type).color} />
       </View>
       <View style={styles.notificationContent}>
@@ -111,7 +114,10 @@ export default function NotificationScreen({ navigation }) {
           <Text style={styles.notificationTitle} numberOfLines={1}>
             {item.title}
           </Text>
-          <TouchableOpacity onPress={() => deleteNotification(item.id)} hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+          <TouchableOpacity
+            onPress={() => deleteNotification(item.id)}
+            hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+          >
             <Ionicons name='close' size={20} color={COLORS.text.medium} />
           </TouchableOpacity>
         </View>
@@ -124,7 +130,8 @@ export default function NotificationScreen({ navigation }) {
     </TouchableOpacity>
   )
 
-  const filteredNotifications = activeTab === 'all' ? notifications : notifications.filter((item) => item.type === activeTab)
+  const filteredNotifications =
+    activeTab === 'all' ? notifications : notifications.filter((item) => item.type === activeTab)
 
   const hasUnreadNotifications = notifications.some((item) => !item.isRead)
 
@@ -136,7 +143,11 @@ export default function NotificationScreen({ navigation }) {
         </TouchableOpacity>
         <Text style={styles.screenTitle}>Thông báo</Text>
         <TouchableOpacity onPress={() => setShowSettings(!showSettings)} style={styles.settingsButton}>
-          <Ionicons name={showSettings ? 'notifications-outline' : 'settings-outline'} size={24} color={COLORS.text.dark} />
+          <Ionicons
+            name={showSettings ? 'notifications-outline' : 'settings-outline'}
+            size={24}
+            color={COLORS.text.dark}
+          />
         </TouchableOpacity>
       </View>
 
@@ -218,10 +229,16 @@ export default function NotificationScreen({ navigation }) {
             style={styles.tabsContainer}
             contentContainerStyle={styles.tabsContentContainer}
           >
-            <TouchableOpacity style={[styles.tab, activeTab === 'all' && styles.activeTab]} onPress={() => setActiveTab('all')}>
+            <TouchableOpacity
+              style={[styles.tab, activeTab === 'all' && styles.activeTab]}
+              onPress={() => setActiveTab('all')}
+            >
               <Text style={[styles.tabText, activeTab === 'all' && styles.activeTabText]}>Tất cả</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.tab, activeTab === 'promo' && styles.activeTab]} onPress={() => setActiveTab('promo')}>
+            <TouchableOpacity
+              style={[styles.tab, activeTab === 'promo' && styles.activeTab]}
+              onPress={() => setActiveTab('promo')}
+            >
               <Ionicons
                 name='pricetag-outline'
                 size={16}
@@ -230,7 +247,10 @@ export default function NotificationScreen({ navigation }) {
               />
               <Text style={[styles.tabText, activeTab === 'promo' && styles.activeTabText]}>Khuyến mãi</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.tab, activeTab === 'order' && styles.activeTab]} onPress={() => setActiveTab('order')}>
+            <TouchableOpacity
+              style={[styles.tab, activeTab === 'order' && styles.activeTab]}
+              onPress={() => setActiveTab('order')}
+            >
               <Ionicons
                 name='cube-outline'
                 size={16}
@@ -239,7 +259,10 @@ export default function NotificationScreen({ navigation }) {
               />
               <Text style={[styles.tabText, activeTab === 'order' && styles.activeTabText]}>Đơn hàng</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.tab, activeTab === 'voucher' && styles.activeTab]} onPress={() => setActiveTab('voucher')}>
+            <TouchableOpacity
+              style={[styles.tab, activeTab === 'voucher' && styles.activeTab]}
+              onPress={() => setActiveTab('voucher')}
+            >
               <Ionicons
                 name='gift-outline'
                 size={16}
@@ -248,7 +271,10 @@ export default function NotificationScreen({ navigation }) {
               />
               <Text style={[styles.tabText, activeTab === 'voucher' && styles.activeTabText]}>Voucher</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.tab, activeTab === 'product' && styles.activeTab]} onPress={() => setActiveTab('product')}>
+            <TouchableOpacity
+              style={[styles.tab, activeTab === 'product' && styles.activeTab]}
+              onPress={() => setActiveTab('product')}
+            >
               <Ionicons
                 name='flask-outline'
                 size={16}
@@ -292,7 +318,7 @@ export default function NotificationScreen({ navigation }) {
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   header: {
     flexDirection: 'row',
@@ -300,25 +326,25 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 50,
-    paddingBottom: 16,
+    paddingBottom: 16
   },
   backButton: {
-    padding: 8,
+    padding: 8
   },
   screenTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: COLORS.text.dark,
+    color: COLORS.text.dark
   },
   settingsButton: {
-    padding: 8,
+    padding: 8
   },
   tabsContainer: {
     flexGrow: 0,
-    paddingHorizontal: 8,
+    paddingHorizontal: 8
   },
   tabsContentContainer: {
-    paddingVertical: 8,
+    paddingVertical: 8
   },
   tab: {
     flexDirection: 'row',
@@ -332,26 +358,26 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 2,
+    elevation: 2
   },
   activeTab: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.primary
   },
   tabText: {
     fontSize: 14,
     color: COLORS.text.medium,
-    fontWeight: '500',
+    fontWeight: '500'
   },
   activeTabText: {
     color: COLORS.text.light,
-    fontWeight: '600',
+    fontWeight: '600'
   },
   tabIcon: {
-    marginRight: 4,
+    marginRight: 4
   },
   notificationsList: {
     padding: 16,
-    paddingBottom: 100,
+    paddingBottom: 100
   },
   notificationItem: {
     flexDirection: 'row',
@@ -364,14 +390,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    position: 'relative',
+    position: 'relative'
   },
   notificationRead: {
-    opacity: 0.9,
+    opacity: 0.9
   },
   notificationUnread: {
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.primary,
+    borderLeftColor: COLORS.primary
   },
   notificationIconContainer: {
     width: 44,
@@ -379,34 +405,34 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 12
   },
   notificationContent: {
-    flex: 1,
+    flex: 1
   },
   notificationHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 4
   },
   notificationTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: COLORS.text.dark,
     flex: 1,
-    marginRight: 8,
+    marginRight: 8
   },
   notificationMessage: {
     fontSize: 14,
     color: COLORS.text.medium,
     marginBottom: 6,
-    lineHeight: 20,
+    lineHeight: 20
   },
   notificationTime: {
     fontSize: 12,
     color: COLORS.text.medium,
-    opacity: 0.7,
+    opacity: 0.7
   },
   unreadIndicator: {
     position: 'absolute',
@@ -415,17 +441,17 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.primary
   },
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+    paddingVertical: 60
   },
   emptyText: {
     marginTop: 16,
     fontSize: 16,
-    color: COLORS.text.medium,
+    color: COLORS.text.medium
   },
   markAllReadButton: {
     position: 'absolute',
@@ -439,12 +465,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 4,
+    elevation: 4
   },
   markAllReadText: {
     color: COLORS.text.light,
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 14
   },
   settingsContainer: {
     flex: 1,
@@ -457,14 +483,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 4,
+    elevation: 4
   },
   settingsTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: COLORS.text.dark,
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   settingItem: {
     flexDirection: 'row',
@@ -472,21 +498,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.secondary,
+    borderBottomColor: COLORS.secondary
   },
   settingTextContainer: {
     flex: 1,
-    marginRight: 16,
+    marginRight: 16
   },
   settingLabel: {
     fontSize: 16,
     fontWeight: '500',
     color: COLORS.text.dark,
-    marginBottom: 4,
+    marginBottom: 4
   },
   settingDescription: {
     fontSize: 13,
-    color: COLORS.text.medium,
+    color: COLORS.text.medium
   },
   saveSettingsButton: {
     marginTop: 32,
@@ -498,11 +524,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 4,
+    elevation: 4
   },
   saveSettingsText: {
     color: COLORS.text.light,
     fontWeight: '600',
-    fontSize: 16,
-  },
+    fontSize: 16
+  }
 })

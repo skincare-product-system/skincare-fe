@@ -1,8 +1,8 @@
 import { createDrawerNavigator } from '@react-navigation/drawer'
-
 import { CustomDrawer } from '../components'
-
 import StackNavigator from './StackNavigator'
+import WishlistScreen from '../../screens/wishlist/WishlistScreen'
+import CustomerSupportScreen from '../../screens/CustomerSupportScreen' // Thêm CustomerSupportScreen
 
 const Drawer = createDrawerNavigator()
 
@@ -19,6 +19,7 @@ export default function DrawerNavigator() {
       }}
     >
       <Drawer.Screen name='StackNavigator' component={StackNavigator} />
+      
     </Drawer.Navigator>
   )
 }

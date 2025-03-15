@@ -4,6 +4,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { CategoryScreen, HomeScreen, ProfileScreen } from '../../screens'
 import WishlistScreen from '../../screens/wishlist/WishlistScreen' // Thêm WishlistScreen
+import CustomerSupportScreen from '../../screens/CustomerSupportScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -33,6 +34,14 @@ export default function BottomTabNavigator() {
           title: 'Yêu Thích'
         }}
         component={WishlistScreen}
+      />
+      <Tab.Screen
+        name='CustomerSupport'
+        options={{
+          tabBarIcon: ({ color }) => <Ionicons name='headset' size={35} color={color} />, // Biểu tượng tai nghe cho hỗ trợ
+          title: 'Hỗ trợ'
+        }}
+        component={CustomerSupportScreen}
       />
       <Tab.Screen
         name='ProfileScreen'

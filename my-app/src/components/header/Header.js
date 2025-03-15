@@ -1,9 +1,15 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Feather from '@expo/vector-icons/Feather'
-import { useNavigation } from '@react-navigation/native'
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { useCallback, useEffect, useState } from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+
+import { useCart } from '../../context/CartContext'
 
 export default function Header() {
+  const { cartTotal } = useCart()
+
   const navigation = useNavigation()
   return (
     <View>
@@ -13,20 +19,53 @@ export default function Header() {
         </View>
 
         <Feather name='box' size={30} color='#3D3D3D' />
+
         <TouchableOpacity onPress={() => navigation.navigate('StackNavigator', { screen: 'CartScreen' })}>
-          <AntDesign name='shoppingcart' size={30} color='#3D3D3D' />
+          <View style={{ position: 'relative', width: 40, alignItems: 'center' }}>
+            <AntDesign name='shoppingcart' size={30} color='#3D3D3D' />
+
+            {/* Bubble hiển thị số lượng */}
+            <View
+              style={{
+                position: 'absolute',
+                top: -5,
+                right: -5,
+                backgroundColor: 'red',
+                borderRadius: 10,
+                width: 20,
+                height: 20,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: 'white',
+                zIndex: 1
+              }}
+            >
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 10,
+                  fontWeight: 'bold',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                {cartTotal}
+              </Text>
+            </View>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
   )
 }
+
 const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 10,
-    gap: 3,
     marginTop: 10
   },
   searchBarInput: {

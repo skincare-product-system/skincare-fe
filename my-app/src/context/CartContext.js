@@ -1,4 +1,6 @@
-import { createContext, useContext, useState } from 'react'
+/* eslint-disable no-console */
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 const CartContext = createContext()
 
@@ -8,6 +10,22 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([])
   const [cartTotal, setCartTotal] = useState(0)
 
+  useEffect(() => {
+    const loadCart = async () => {
+      try {
+        const storedCart = await AsyncStorage.getItem('cart')
+
+        if (storedCart) {
+          const parsedCart = JSON.parse(storedCart)
+          setCartItems(parsedCart.items)
+          setCartTotal(parsedCart.length)
+        }
+      } catch (error) {
+        console.error('Lỗi khi tải giỏ hàng từ AsyncStorage:', error)
+      }
+    }
+    loadCart()
+  }, [])
   const addToCart = (product, quantity = 1) => {
     const existingItemIndex = cartItems.findIndex((item) => item.id === product.id)
 
@@ -49,6 +67,7 @@ export const CartProvider = ({ children }) => {
       value={{
         cartItems,
         cartTotal,
+        setCartTotal,
         addToCart,
         removeFromCart,
         updateQuantity,

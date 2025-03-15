@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
+import { useNavigation } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
-import { Image, ScrollView, Text, View } from 'react-native'
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 import categoryApi from '../../src/apis/categories.api'
 import quizApi from '../../src/apis/quizzes.api'
@@ -14,6 +15,7 @@ const images = [
 ]
 
 export default function Home() {
+  const nav = useNavigation()
   const [cates, setCates] = useState([])
   const [quizzes, setQuizzes] = useState([])
   const getLeafCategories = (categories) => {
@@ -75,10 +77,16 @@ export default function Home() {
         <Text style={{ textTransform: 'capitalize', fontSize: 20, fontWeight: '600' }}>Bài Trắc nghiệm</Text>
         <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
           {quizzes.map((item) => (
-            <View key={item._id} style={{ paddingHorizontal: 5 }}>
-              {/* <Image source={{ uri: item.image }} style={{ width: 90, height: 90, borderRadius: 20 }} /> */}
+            <TouchableOpacity
+              key={item._id}
+              style={{ paddingHorizontal: 5 }}
+              onPress={() => {
+                nav.navigate('StackNavigator', { screen: 'QuizDetailScreen', params: { quizDetail: item } })
+              }}
+            >
+              <Image source={{ uri: item.images }} style={{ width: 200, height: 100, borderRadius: 20 }} />
               <Text>{item.title}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>

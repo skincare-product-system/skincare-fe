@@ -1,5 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack'
 
+import { ProfileScreen } from '../../screens'
 import AccountScreen from '../screens/profile/AccountScreen'
 // import EditProfileScreen from '../screens/EditProfileScreen'
 import ChangePasswordScreen from '../screens/profile/ChangePasswordScreen'
@@ -20,7 +21,7 @@ const Stack = createStackNavigator()
 export default function AccountNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name='AccountScreen' component={AccountScreen} />
+      <Stack.Screen name='ProfileScreen' component={ProfileScreen} />
       <Stack.Screen name='UserInformation' component={UserInformation} />
       {/* <Stack.Screen name='EditProfile' component={EditProfileScreen} /> */}
       <Stack.Screen name='ChangePasswordScreen' component={ChangePasswordScreen} />

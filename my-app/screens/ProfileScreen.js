@@ -31,8 +31,6 @@ const COLORS = {
 export default function ProfileScreen() {
   const nav = useNavigation()
   const { isAuthenticated, profile, reset } = useAuth()
-  const [isLoading, setIsLoading] = useState(false)
-
   const handleTrackOrder = () => {
     if (isAuthenticated) {
       // nav.navigate('TrackOrderScreen')
@@ -115,7 +113,9 @@ export default function ProfileScreen() {
               <View style={styles.menuIconContainer}>
                 <Feather name='star' size={20} color={COLORS.primaryDark} />
               </View>
-              <Text style={styles.menuText}>Đánh giá sản phẩm</Text>
+              <Text style={styles.menuText} onPress={() => nav.navigate('ProductsToReviewScreen', { profile })}>
+                Đánh giá sản phẩm
+              </Text>
               <Feather name='chevron-right' size={20} color='#ccc' />
             </TouchableOpacity>
 
@@ -123,7 +123,9 @@ export default function ProfileScreen() {
               <View style={styles.menuIconContainer}>
                 <Feather name='message-square' size={20} color={COLORS.primaryDark} />
               </View>
-              <Text style={styles.menuText}>Lịch sử đánh giá</Text>
+              <Text style={styles.menuText} onPress={() => nav.navigate('ReviewHistoryScreen')}>
+                Lịch sử đánh giá
+              </Text>
               <Feather name='chevron-right' size={20} color='#ccc' />
             </TouchableOpacity>
 
@@ -131,7 +133,9 @@ export default function ProfileScreen() {
               <View style={styles.menuIconContainer}>
                 <Feather name='map-pin' size={20} color={COLORS.primaryDark} />
               </View>
-              <Text style={styles.menuText}>Địa chỉ của tôi</Text>
+              <Text style={styles.menuText} onPress={() => nav.navigate('MyAddressScreen')}>
+                Địa chỉ của tôi
+              </Text>
               <Feather name='chevron-right' size={20} color='#ccc' />
             </TouchableOpacity>
 
@@ -139,7 +143,9 @@ export default function ProfileScreen() {
               <View style={styles.menuIconContainer}>
                 <Feather name='gift' size={20} color={COLORS.primaryDark} />
               </View>
-              <Text style={styles.menuText}>Mã giảm giá của tôi</Text>
+              <Text style={styles.menuText} onPress={() => nav.navigate('VoucherScreen')}>
+                Mã giảm giá của tôi
+              </Text>
               <Feather name='chevron-right' size={20} color='#ccc' />
             </TouchableOpacity>
 
@@ -147,7 +153,9 @@ export default function ProfileScreen() {
               <View style={styles.menuIconContainer}>
                 <Feather name='bell' size={20} color={COLORS.primaryDark} />
               </View>
-              <Text style={styles.menuText}>Thông báo</Text>
+              <Text style={styles.menuText} onPress={() => nav.navigate('NotificationScreen')}>
+                Thông báo
+              </Text>
               <Feather name='chevron-right' size={20} color='#ccc' />
             </TouchableOpacity>
 
@@ -155,7 +163,9 @@ export default function ProfileScreen() {
               <View style={styles.menuIconContainer}>
                 <Feather name='user' size={20} color={COLORS.primaryDark} />
               </View>
-              <Text style={styles.menuText}>Thông tin tài khoản</Text>
+              <TouchableOpacity style={styles.menuText} onPress={() => nav.navigate('UserInformation')}>
+                <Text style={styles.menuText}>Thông tin tài khoản</Text>
+              </TouchableOpacity>
               <Feather name='chevron-right' size={20} color='#ccc' />
             </TouchableOpacity>
 
@@ -163,7 +173,9 @@ export default function ProfileScreen() {
               <View style={styles.menuIconContainer}>
                 <Feather name='help-circle' size={20} color={COLORS.primaryDark} />
               </View>
-              <Text style={styles.menuText}>Trợ giúp & Hỗ trợ</Text>
+              <Text style={styles.menuText} onPress={() => nav.navigate('HelpSupportScreen')}>
+                Trợ giúp & Hỗ trợ
+              </Text>
               <Feather name='chevron-right' size={20} color='#ccc' />
             </TouchableOpacity>
           </View>
@@ -189,7 +201,7 @@ export default function ProfileScreen() {
             </View>
             <TouchableOpacity
               style={{ backgroundColor: '#FFA725', paddingVertical: 10, paddingHorizontal: 20, borderRadius: 30 }}
-              onPress={() => nav.navigate('LoginScreen')}
+              onPress={() => nav.navigate('StackNavigator', { screen: 'LoginScreen' })}
             >
               <Text style={{ color: 'white', fontWeight: '500' }}>Đăng nhập</Text>
             </TouchableOpacity>

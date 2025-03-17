@@ -4,11 +4,11 @@ import { HttpStatusCode } from 'axios'
 import React, { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { View, Text, TextInput, TouchableOpacity, ToastAndroid } from 'react-native'
+import Toast from 'react-native-toast-message'
 
 import authApi from '../src/apis/auth.api'
 import { useAuth } from '../src/context/AuthContext'
 import { isAxiosUnprocessableEntity } from '../src/utils/utils'
-import Toast from 'react-native-toast-message'
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('')
@@ -27,7 +27,6 @@ export default function LoginScreen() {
       if (response.status === HttpStatusCode.Ok) {
         setIsAuthenticated(true)
         setProfile(response.data.result.user)
-
         nav.navigate('BottomTabNavigator', { screen: 'Home' })
         // ToastAndroid.show('Đăng nhập thành công', ToastAndroid.SHORT)
         Toast.show({

@@ -3,7 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
-import { CategoryScreen, HomeScreen } from '../../screens'
+import { CategoryScreen, HomeScreen, ProfileScreen } from '../../screens'
 
 import AccountNavigator from './AccountNavigator'
 

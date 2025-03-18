@@ -2,15 +2,13 @@
 import { useNavigation } from '@react-navigation/native'
 import { HttpStatusCode } from 'axios'
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import { LinearGradient } from 'expo-linear-gradient'
+import { useForm, Controller } from 'react-hook-form'
+import { View, Text, TextInput, TouchableOpacity, ToastAndroid } from 'react-native'
+import Toast from 'react-native-toast-message'
 
 import authApi from '../src/apis/auth.api'
 import { useAuth } from '../src/context/AuthContext'
 import { isAxiosUnprocessableEntity } from '../src/utils/utils'
-import Toast from 'react-native-toast-message'
 
 const COLORS = {
   primary: '#C9A66B',

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import AntDesign from '@expo/vector-icons/AntDesign'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, TextInput, TouchableOpacity } from 'react-native'
 import { View, Text } from 'react-native'
 import ActionSheet from 'react-native-actions-sheet'
@@ -18,6 +18,7 @@ const { useState, useEffect, useRef } = require('react')
 
 export default function ProductDetailScreen() {
   const route = useRoute()
+  const nav = useNavigation()
   const [product, setProduct] = useState({})
   const { productDetail } = route.params
   const [groupedAttributes, setGroupedAttributes] = useState({})
@@ -333,6 +334,7 @@ export default function ProductDetailScreen() {
           <Text style={{ color: 'white', fontWeight: '500' }}>Thêm vào giỏ</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={() => nav.navigate('CheckoutScreen', { products: [product] })}
           style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#FF9D3D', borderRadius: 50 }}
         >
           <Text style={{ color: 'white', fontWeight: '500' }}>Mua ngay</Text>

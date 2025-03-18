@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { getAccessTokenFromAsyncStorage, getProfileFromAsyncStorage } from '../utils/auth'
 
 const initialAppContext = {
-  isAuthenticated: false,
+  isAuthenticated: Boolean(getAccessTokenFromAsyncStorage()),
   setIsAuthenticated: () => null,
   profile: null,
   setProfile: () => null,

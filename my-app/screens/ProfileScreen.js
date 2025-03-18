@@ -4,9 +4,9 @@ import { Feather, MaterialIcons } from '@expo/vector-icons'
 import Entypo from '@expo/vector-icons/Entypo'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { useState } from 'react'
 import { View, Text, TouchableOpacity, Alert, ScrollView, Image, StyleSheet } from 'react-native'
 
+import authApi from '../src/apis/auth.api'
 import { useAuth } from '../src/context/AuthContext'
 
 const COLORS = {
@@ -30,7 +30,8 @@ const COLORS = {
 
 export default function ProfileScreen() {
   const nav = useNavigation()
-  const { isAuthenticated, profile, reset } = useAuth()
+  const { isAuthenticated, profile, setProfile, setIsAuthenticated } = useAuth()
+
   const handleTrackOrder = () => {
     if (isAuthenticated) {
       // nav.navigate('TrackOrderScreen')
@@ -46,6 +47,15 @@ export default function ProfileScreen() {
       ])
     }
   }
+
+  const handleLogout = async () => {
+    const response = await authApi.logout()
+    console.log(response.status)
+
+    setIsAuthenticated(false)
+    setProfile(null)
+  }
+
   return (
     <View>
       {isAuthenticated ? (
@@ -180,7 +190,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.logoutButton} onPress={() => reset()}>
+          <TouchableOpacity style={styles.logoutButton} onPress={() => handleLogout()}>
             <Text style={styles.logoutButtonText}>Đăng xuất</Text>
           </TouchableOpacity>
         </ScrollView>

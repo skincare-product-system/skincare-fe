@@ -1,6 +1,14 @@
 import { createStackNavigator } from '@react-navigation/stack'
 
-import { CartScreen, LoginScreen, ProductDetailScreen, ProductListScreen, RegisterScreen } from '../../screens'
+import {
+  CartScreen,
+  LoginScreen,
+  OrderConfirmationScreen,
+  ProductDetailScreen,
+  ProductListScreen,
+  RegisterScreen
+} from '../../screens'
+import CheckoutScreen from '../../screens/CheckoutScreen'
 import QuizDetailScreen from '../../screens/quiz/QuizDetailScreen'
 import QuizResultScreen from '../../screens/quiz/QuizResultScreen'
 
@@ -27,6 +35,8 @@ export default function StackNavigator() {
       <Stack.Screen name='CartScreen' component={CartScreen} options={{ headerShown: true, title: 'Cart' }} />
       <Stack.Screen name='QuizDetailScreen' component={QuizDetailScreen} />
       <Stack.Screen name='QuizResultScreen' component={QuizResultScreen} />
+      <Stack.Screen name='CheckoutScreen' component={CheckoutScreen} />
+      <Stack.Screen name='OrderConfirmationScreen' component={OrderConfirmationScreen} />
     </Stack.Navigator>
   )
 }

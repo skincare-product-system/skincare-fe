@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
+import { getRefreshTokenFromAsyncStorage } from '../utils/auth'
 import http from '../utils/http'
 
 const userUrl = '/api/users'
-export const refreshTokenUrl = '/api/auth/refresh-token'
+export const refreshTokenUrl = '/api/users/refresh-token'
 const authApi = {
   async login(email, password) {
     return await http.post(`${userUrl}/login`, { email, password })
@@ -15,6 +17,12 @@ const authApi = {
   async updateMe(payload) {
     return await http.patch(`${userUrl}/me`, {
       ...payload
+    })
+  },
+  async logout() {
+    const refresh_token = await getRefreshTokenFromAsyncStorage()
+    return await http.post(`${userUrl}/logout`, {
+      refresh_token
     })
   }
 }

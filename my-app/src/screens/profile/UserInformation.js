@@ -86,9 +86,6 @@ export default function UserInformation({ navigation }) {
         console.error('Lỗi: Response không hợp lệ', response)
         return
       }
-
-      console.log('Dữ liệu trả về từ API:', response.data)
-
       setFormData({
         username: response.data.result?.username || '',
         email: response.data.result?.email || '',

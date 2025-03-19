@@ -9,7 +9,7 @@ import { useCart } from '../../context/CartContext'
 
 export default function Header() {
   const { cartTotal } = useCart()
-
+  const [isAuthenticated] = useState(false)
   const navigation = useNavigation()
   return (
     <View>

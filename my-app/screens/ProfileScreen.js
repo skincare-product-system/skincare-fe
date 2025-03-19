@@ -4,9 +4,10 @@ import { Feather, MaterialIcons } from '@expo/vector-icons'
 import Entypo from '@expo/vector-icons/Entypo'
 import { useNavigation } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { useState } from 'react'
 import { View, Text, TouchableOpacity, Alert, ScrollView, Image, StyleSheet } from 'react-native'
 
+import authApi from '../src/apis/auth.api'
+import { useCart } from '../src/context'
 import { useAuth } from '../src/context/AuthContext'
 
 const COLORS = {
@@ -31,6 +32,16 @@ const COLORS = {
 export default function ProfileScreen() {
   const nav = useNavigation()
   const { isAuthenticated, profile, reset } = useAuth()
+
+  const handleLogout = async () => {
+    try {
+      await authApi.logout()
+      reset()
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
   const handleTrackOrder = () => {
     if (isAuthenticated) {
       // nav.navigate('TrackOrderScreen')
@@ -133,7 +144,10 @@ export default function ProfileScreen() {
               <View style={styles.menuIconContainer}>
                 <Feather name='map-pin' size={20} color={COLORS.primaryDark} />
               </View>
-              <Text style={styles.menuText} onPress={() => nav.navigate('MyAddressScreen')}>
+              <Text
+                style={styles.menuText}
+                onPress={() => nav.navigate('AddressNavigator', { screen: 'MyAddressScreen' })}
+              >
                 Địa chỉ của tôi
               </Text>
               <Feather name='chevron-right' size={20} color='#ccc' />
@@ -180,7 +194,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.logoutButton} onPress={() => reset()}>
+          <TouchableOpacity style={styles.logoutButton} onPress={() => handleLogout()}>
             <Text style={styles.logoutButtonText}>Đăng xuất</Text>
           </TouchableOpacity>
         </ScrollView>

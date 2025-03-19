@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { useNavigation } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 import categoryApi from '../../src/apis/categories.api'
 import quizApi from '../../src/apis/quizzes.api'
@@ -16,6 +16,7 @@ const images = [
 
 export default function Home() {
   const nav = useNavigation()
+  const [isLoading, setIsLoading] = useState(true)
   const [cates, setCates] = useState([])
   const [quizzes, setQuizzes] = useState([])
   const getLeafCategories = (categories) => {
@@ -38,6 +39,7 @@ export default function Home() {
       const response = await categoryApi.getCategories()
       const leafCategories = getLeafCategories(response.data.result)
       setCates(leafCategories)
+      setIsLoading(false)
       //setCates(response.data.result)
     }
     getSubCates()
@@ -47,49 +49,56 @@ export default function Home() {
     const getQuiz = async () => {
       const response = await quizApi.getQuizzes()
       const quiz = response.data.result
-      // console.log(quiz)
       setQuizzes(quiz)
+      setIsLoading(false)
     }
     getQuiz()
   }, [])
   return (
-    <ScrollView>
-      <Header />
-      <View>
-        <ImageSlider images={images} height={300} />
-      </View>
+    <>
+      {isLoading ? (
+        <ActivityIndicator size='large' color='#0000ff' />
+      ) : (
+        <ScrollView>
+          <Header />
+          <View>
+            <ImageSlider images={images} height={300} />
+          </View>
 
-      {/* Danh mục hot */}
-      <View style={{ padding: 10, marginTop: 10 }}>
-        <Text style={{ textTransform: 'capitalize', fontSize: 20, fontWeight: '600' }}>Danh mục hot</Text>
+          {/* Danh mục hot */}
+          <View style={{ padding: 10, marginTop: 10 }}>
+            <Text style={{ textTransform: 'capitalize', fontSize: 20, fontWeight: '600' }}>Danh mục hot</Text>
 
-        {/* Scroll ngang giữa các slide */}
-        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
-          {cates.map((item) => (
-            <View key={item._id} style={{ paddingHorizontal: 5, alignItems: 'center' }}>
-              <Image source={{ uri: item.image }} style={{ width: 90, height: 90, borderRadius: 20 }} />
-              <Text>{item.name}</Text>
-            </View>
-          ))}
+            {/* Scroll ngang giữa các slide */}
+            <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+              {cates.map((item) => (
+                <View key={item._id} style={{ paddingHorizontal: 5, alignItems: 'center' }}>
+                  <Image source={{ uri: item.image }} style={{ width: 90, height: 90, borderRadius: 20 }} />
+                  <Text>{item.name}</Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+          <View style={{ padding: 10, marginTop: 10 }}>
+            <Text style={{ textTransform: 'capitalize', fontSize: 20, fontWeight: '600' }}>Bài Trắc nghiệm</Text>
+            <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+              {quizzes &&
+                quizzes.map((item) => (
+                  <TouchableOpacity
+                    key={item._id}
+                    style={{ paddingHorizontal: 5 }}
+                    onPress={() => {
+                      nav.navigate('StackNavigator', { screen: 'QuizDetailScreen', params: { quizDetail: item } })
+                    }}
+                  >
+                    <Image source={{ uri: item.images }} style={{ width: 200, height: 100, borderRadius: 20 }} />
+                    <Text>{item.title}</Text>
+                  </TouchableOpacity>
+                ))}
+            </ScrollView>
+          </View>
         </ScrollView>
-      </View>
-      <View style={{ padding: 10, marginTop: 10 }}>
-        <Text style={{ textTransform: 'capitalize', fontSize: 20, fontWeight: '600' }}>Bài Trắc nghiệm</Text>
-        <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
-          {quizzes.map((item) => (
-            <TouchableOpacity
-              key={item._id}
-              style={{ paddingHorizontal: 5 }}
-              onPress={() => {
-                nav.navigate('StackNavigator', { screen: 'QuizDetailScreen', params: { quizDetail: item } })
-              }}
-            >
-              <Image source={{ uri: item.images }} style={{ width: 200, height: 100, borderRadius: 20 }} />
-              <Text>{item.title}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-    </ScrollView>
+      )}
+    </>
   )
 }

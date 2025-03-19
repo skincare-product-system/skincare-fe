@@ -10,9 +10,6 @@ export const clearAsyncStorage = async () => {
   await AsyncStorage.removeItem('access_token')
   await AsyncStorage.removeItem('refresh_token')
   await AsyncStorage.removeItem('profile')
-
-  const clearLocalStorageEventTarget = new Event('clearLocalStorage')
-  LocalStorageEventTarget.dispatchEvent(clearLocalStorageEventTarget)
 }
 export const getAccessTokenFromAsyncStorage = async () => {
   return (await AsyncStorage.getItem('access_token')) || ''

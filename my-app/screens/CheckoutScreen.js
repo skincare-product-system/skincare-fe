@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import Entypo from '@expo/vector-icons/Entypo'
 import { useNavigation, useRoute } from '@react-navigation/native'
-import { Image, Linking, Text, TouchableOpacity, View } from 'react-native'
+import { useState } from 'react'
+import { Image, Linking, Text, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native'
 
 import paymentApi from '../src/apis/payments.api'
 import { useAuth } from '../src/context/AuthContext'
@@ -10,10 +11,9 @@ import { formatNumber } from '../src/utils/utils'
 export default function CheckoutScreen() {
   const route = useRoute()
   const { profile } = useAuth()
-  console.log('🚀 ~ CheckoutScreen ~ profile:', profile)
   const { products } = route.params
   const navigation = useNavigation()
-  console.log(JSON.stringify(products, null, 2))
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleEditShippingAddress = () => {}
 
@@ -22,42 +22,61 @@ export default function CheckoutScreen() {
       console.log('Chưa đăng nhập')
       return navigation.navigate('LoginScreen')
     }
-    // const payload = {
-    //   products: [
-    //     {
-    //       product_id: products[0].product_id,
-    //       variation_id: products[0]._id,
-    //       quantity: 1,
-    //       price: products[0].price
-    //     }
-    //   ]
-    // }
-    // const response = await paymentApi.createPayment(payload)
-    // console.log(response.data.result)
+
+    setIsLoading(true)
 
     const payload = {
-      products: [
-        {
-          product_id: products[0].product_id,
-          variation_id: products[0]._id,
-          quantity: 1,
-          price: products[0].price
-        }
-      ]
+      products: products.map((product) => ({
+        product_id: product.product_id,
+        variation_id: product._id,
+        quantity: 1,
+        price: product.price
+      }))
     }
 
     try {
       const response = await paymentApi.createPayment(payload)
       console.log('📤 Payment API Response:', response.data)
-      await Linking.openURL(response.data.result.order_url)
-      navigation.navigate('OrderConfirmationScreen', { orderId: payload.products[0].product_id })
+
+      const paymentUrl = response.data.result.order_url
+      const zaloPayScheme = 'zalopay://'
+
+      // First check if ZaloPay is installed
+      const canOpenZaloPay = await Linking.canOpenURL(zaloPayScheme)
+
+      if (canOpenZaloPay) {
+        // Try to open ZaloPay directly
+        await Linking.openURL(paymentUrl)
+      } else {
+        // If ZaloPay isn't installed, offer options to the user
+        Alert.alert(
+          'Không tìm thấy ứng dụng ZaloPay',
+          'Bạn cần cài đặt ứng dụng ZaloPay để thanh toán hoặc mở link trong trình duyệt.',
+          [
+            {
+              text: 'Cài đặt ZaloPay',
+              onPress: () => Linking.openURL('https://play.google.com/store/apps/details?id=vn.com.vng.zalopay')
+            },
+            {
+              text: 'Mở trong trình duyệt',
+              onPress: () => Linking.openURL(paymentUrl)
+            },
+            {
+              text: 'Hủy',
+              style: 'cancel'
+            }
+          ]
+        )
+      }
+
+      // Store order information for confirmation
+      const orderId = response.data.result.order_id || payload.products[0].product_id
+      navigation.navigate('OrderConfirmationScreen', { orderId })
     } catch (error) {
       console.error('Error during checkout:', error)
-      if (error instanceof Linking.LinkingError) {
-        console.error('Không thể mở URL:', error)
-      } else {
-        console.error('Payment API Error:', error.response?.data || error.message)
-      }
+      Alert.alert('Lỗi thanh toán', 'Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại sau.', [{ text: 'OK' }])
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -151,11 +170,15 @@ export default function CheckoutScreen() {
           padding: 10,
           margin: 10,
           borderRadius: 10,
-          alignItems: 'center'
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'center'
         }}
-        onPress={() => handleCheckout()}
+        onPress={handleCheckout}
+        disabled={isLoading}
       >
-        <Text style={{ color: 'white', fontWeight: '600' }}>Thanh toán</Text>
+        {isLoading ? <ActivityIndicator color='white' style={{ marginRight: 8 }} /> : null}
+        <Text style={{ color: 'white', fontWeight: '600' }}>{isLoading ? 'Đang xử lý...' : 'Thanh toán'}</Text>
       </TouchableOpacity>
     </View>
   )

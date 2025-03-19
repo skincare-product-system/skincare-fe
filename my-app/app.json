@@ -14,7 +14,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.myapp"
+      "bundleIdentifier": "com.anonymous.myapp",
+      "associatedDomains": ["applinks:*.zalopay.vn"]
     },
     "android": {
       "package": "com.anonymous.myapp",
@@ -29,6 +30,16 @@
             {
               "scheme": "com.anonymous.myapp",
               "host": "payment"
+            },
+            {
+              "scheme": "https",
+              "host": "*.zalopay.vn",
+              "pathPrefix": "/openinapp"
+            },
+            {
+              "scheme": "http",
+              "host": "*.zalopay.vn",
+              "pathPrefix": "/openinapp"
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]

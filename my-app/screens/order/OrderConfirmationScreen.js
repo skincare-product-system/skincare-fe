@@ -23,8 +23,12 @@ const OrderConfirmationScreen = ({ navigation, route }) => {
   if (!order) {
     return (
       <View style={styles.container}>
+        <Ionicons name='alert-circle-outline' size={70} color='#FF6B6B' style={styles.errorIcon} />
         <Text style={styles.errorText}>Order information not found</Text>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity
+          style={styles.errorButton}
+          onPress={() => navigation.navigate('BottomTabNavigator', { screen: 'Home' })}
+        >
           <Text style={styles.buttonText}>Return to Home</Text>
         </TouchableOpacity>
       </View>
@@ -35,7 +39,7 @@ const OrderConfirmationScreen = ({ navigation, route }) => {
     <View style={styles.container}>
       <View style={styles.successIconContainer}>
         <View style={styles.circleBackground}>
-          <Ionicons name='checkmark' size={60} color='#fff' />
+          <Ionicons name='checkmark' size={64} color='#fff' />
         </View>
       </View>
 
@@ -81,32 +85,40 @@ const OrderConfirmationScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 20,
     backgroundColor: '#fff',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   successIconContainer: {
-    marginVertical: 30
+    marginVertical: 35,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3
   },
   circleBackground: {
     backgroundColor: '#4CAF50',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center'
   },
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333'
+    marginBottom: 12,
+    color: '#2D3748',
+    textAlign: 'center'
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 30,
-    textAlign: 'center'
+    fontSize: 17,
+    color: '#718096',
+    marginBottom: 35,
+    textAlign: 'center',
+    paddingHorizontal: 20
   },
   orderInfoContainer: {
     width: '100%',
@@ -160,17 +172,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16
   },
-  errorText: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginVertical: 30,
-    color: '#666'
+  errorIcon: {
+    marginBottom: 20
   },
-  button: {
-    backgroundColor: '#2196F3',
-    padding: 14,
-    borderRadius: 5,
-    width: '80%'
+  errorText: {
+    fontSize: 19,
+    textAlign: 'center',
+    marginVertical: 25,
+    color: '#4A5568',
+    fontWeight: '500'
+  },
+  errorButton: {
+    backgroundColor: '#3182CE',
+    padding: 16,
+    borderRadius: 8,
+    width: '80%',
+    marginTop: 10
   },
   buttonText: {
     color: '#fff',

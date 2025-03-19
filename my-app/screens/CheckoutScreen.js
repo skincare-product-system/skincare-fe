@@ -1,20 +1,27 @@
 /* eslint-disable no-console */
 import Entypo from '@expo/vector-icons/Entypo'
-import { useRoute } from '@react-navigation/native'
-import { Linking } from 'react-native'
-import { View, Text, TouchableOpacity, Image } from 'react-native'
+import { useNavigation, useRoute } from '@react-navigation/native'
+import { Image, Linking, Text, TouchableOpacity, View } from 'react-native'
 
 import paymentApi from '../src/apis/payments.api'
+import { useAuth } from '../src/context/AuthContext'
 import { formatNumber } from '../src/utils/utils'
 
 export default function CheckoutScreen() {
   const route = useRoute()
+  const { profile } = useAuth()
+  console.log('🚀 ~ CheckoutScreen ~ profile:', profile)
   const { products } = route.params
+  const navigation = useNavigation()
   console.log(JSON.stringify(products, null, 2))
 
   const handleEditShippingAddress = () => {}
 
   const handleCheckout = async () => {
+    if (!profile) {
+      console.log('Chưa đăng nhập')
+      return navigation.navigate('LoginScreen')
+    }
     // const payload = {
     //   products: [
     //     {
@@ -41,7 +48,12 @@ export default function CheckoutScreen() {
 
     const response = await paymentApi.createPayment(payload)
     console.log('📤 Payment API Response:', response.data)
-    Linking.openURL(response.data.result.order_url).catch((err) => console.error('Không thể mở URL:', err))
+    Linking.openURL(response.data.result.order_url)
+      .then((res) => {
+        console.log(res)
+        navigation.navigate('OrderConfirmationScreen', { orderId: payload.products[0].product_id })
+      })
+      .catch((err) => console.error('Không thể mở URL:', err))
   }
 
   return (

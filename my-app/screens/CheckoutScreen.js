@@ -46,14 +46,19 @@ export default function CheckoutScreen() {
       ]
     }
 
-    const response = await paymentApi.createPayment(payload)
-    console.log('📤 Payment API Response:', response.data)
-    Linking.openURL(response.data.result.order_url)
-      .then((res) => {
-        console.log(res)
-        navigation.navigate('OrderConfirmationScreen', { orderId: payload.products[0].product_id })
-      })
-      .catch((err) => console.error('Không thể mở URL:', err))
+    try {
+      const response = await paymentApi.createPayment(payload)
+      console.log('📤 Payment API Response:', response.data)
+      await Linking.openURL(response.data.result.order_url)
+      navigation.navigate('OrderConfirmationScreen', { orderId: payload.products[0].product_id })
+    } catch (error) {
+      console.error('Error during checkout:', error)
+      if (error instanceof Linking.LinkingError) {
+        console.error('Không thể mở URL:', error)
+      } else {
+        console.error('Payment API Error:', error.response?.data || error.message)
+      }
+    }
   }
 
   return (

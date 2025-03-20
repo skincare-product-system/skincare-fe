@@ -1,7 +1,7 @@
 import Entypo from '@expo/vector-icons/Entypo'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useState } from 'react'
-import { ActivityIndicator, Alert, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
 import Toast from 'react-native-toast-message'
 
 import paymentApi from '../src/apis/payments.api'
@@ -59,30 +59,20 @@ export default function CheckoutScreen() {
 
       if (canOpenZaloPay) {
         await Linking.openURL(paymentUrl)
-      } else {
-        Alert.alert(
-          'Không tìm thấy ứng dụng ZaloPay',
-          'Bạn cần cài đặt ứng dụng ZaloPay để thanh toán hoặc mở link trong trình duyệt.',
-          [
-            {
-              text: 'Cài đặt ZaloPay',
-              onPress: () => Linking.openURL('https://play.google.com/store/apps/details?id=vn.com.vng.zalopay')
-            },
-            { text: 'Mở trong trình duyệt', onPress: () => Linking.openURL(paymentUrl) },
-            { text: 'Hủy', style: 'cancel' }
-          ]
-        )
       }
 
       const orderId = data?.result?.order_id
 
-      if (data?.result) {
+      if (data?.result?.return_code === 1) {
         await createOrder(payload.products, shippingAddress, {}, orderId)
         navigation.navigate('OrderConfirmationScreen', { orderId })
       }
     } catch (error) {
-      Toast.error('Payment API Error:', error)
-      Alert.alert('Lỗi', 'Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại.')
+      Toast.show({
+        type: 'error',
+        text1: 'Payment Error',
+        text2: error.message || 'An error occurred during the payment process. Please try again.'
+      })
     } finally {
       setIsLoading(false)
     }

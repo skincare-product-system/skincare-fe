@@ -1,6 +1,5 @@
 // Cart
 export { default as CartScreen } from './cart/CartScreen'
-export { default as CheckoutScreen } from './cart/CheckoutScreen'
 export { default as RequestRefundScreen } from './cart/RequestRefundScreen'
 export { default as CategoryScreen } from './CategoryScreen'
 // Order

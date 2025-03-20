@@ -1,16 +1,18 @@
-/* eslint-disable no-console */
 import Entypo from '@expo/vector-icons/Entypo'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useState } from 'react'
-import { Image, Linking, Text, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native'
+import { ActivityIndicator, Alert, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
+import Toast from 'react-native-toast-message'
 
 import paymentApi from '../src/apis/payments.api'
 import { useAuth } from '../src/context/AuthContext'
+import { useOrder } from '../src/context/OrderContext'
 import { formatNumber } from '../src/utils/utils'
 
 export default function CheckoutScreen() {
   const route = useRoute()
   const { profile } = useAuth()
+  const { createOrder } = useOrder()
   const { products } = route.params
   const navigation = useNavigation()
   const [isLoading, setIsLoading] = useState(false)
@@ -18,37 +20,46 @@ export default function CheckoutScreen() {
   const handleEditShippingAddress = () => {}
 
   const handleCheckout = async () => {
-    if (!profile) {
-      console.log('Chưa đăng nhập')
-      return navigation.navigate('LoginScreen')
-    }
-
     setIsLoading(true)
 
-    const payload = {
-      products: products.map((product) => ({
-        product_id: product.product_id,
-        variation_id: product._id,
-        quantity: 1,
-        price: product.price
-      }))
-    }
-
     try {
-      const response = await paymentApi.createPayment(payload)
-      console.log('📤 Payment API Response:', response.data)
+      // Validate products array first
+      if (!Array.isArray(products) || products.length === 0) {
+        throw new Error('Invalid products data')
+      }
 
-      const paymentUrl = response.data.result.order_url
+      const shippingAddress = {
+        fullName: profile?.fullName || profile?.name || 'Customer',
+        address: profile?.address || 'Default Address',
+        city: profile?.city || 'Default City',
+        phone: profile?.phone || '0123456789'
+      }
+
+      const payload = {
+        products: products.map((product) => ({
+          product_id: product?.product_id,
+          variation_id: product?._id,
+          quantity: 1,
+          price: product?.price
+        })),
+        shipping_address: shippingAddress,
+        customer_id: profile?.id || profile?._id
+      }
+
+      const { data } = await paymentApi.createPayment(payload)
+
+      if (!data?.result?.order_url) {
+        throw new Error('Missing payment URL in response')
+      }
+
+      const paymentUrl = data.result.order_url
       const zaloPayScheme = 'zalopay://'
 
-      // First check if ZaloPay is installed
       const canOpenZaloPay = await Linking.canOpenURL(zaloPayScheme)
 
       if (canOpenZaloPay) {
-        // Try to open ZaloPay directly
         await Linking.openURL(paymentUrl)
       } else {
-        // If ZaloPay isn't installed, offer options to the user
         Alert.alert(
           'Không tìm thấy ứng dụng ZaloPay',
           'Bạn cần cài đặt ứng dụng ZaloPay để thanh toán hoặc mở link trong trình duyệt.',
@@ -57,24 +68,21 @@ export default function CheckoutScreen() {
               text: 'Cài đặt ZaloPay',
               onPress: () => Linking.openURL('https://play.google.com/store/apps/details?id=vn.com.vng.zalopay')
             },
-            {
-              text: 'Mở trong trình duyệt',
-              onPress: () => Linking.openURL(paymentUrl)
-            },
-            {
-              text: 'Hủy',
-              style: 'cancel'
-            }
+            { text: 'Mở trong trình duyệt', onPress: () => Linking.openURL(paymentUrl) },
+            { text: 'Hủy', style: 'cancel' }
           ]
         )
       }
 
-      // Store order information for confirmation
-      const orderId = response.data.result.order_id || payload.products[0].product_id
-      navigation.navigate('OrderConfirmationScreen', { orderId })
+      const orderId = data?.result?.order_id
+
+      if (data?.result) {
+        await createOrder(payload.products, shippingAddress, {}, orderId)
+        navigation.navigate('OrderConfirmationScreen', { orderId })
+      }
     } catch (error) {
-      console.error('Error during checkout:', error)
-      Alert.alert('Lỗi thanh toán', 'Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại sau.', [{ text: 'OK' }])
+      Toast.error('Payment API Error:', error)
+      Alert.alert('Lỗi', 'Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại.')
     } finally {
       setIsLoading(false)
     }

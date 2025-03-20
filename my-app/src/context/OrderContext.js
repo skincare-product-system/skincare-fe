@@ -8,9 +8,10 @@ export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([])
   const [activeOrder, setActiveOrder] = useState(null)
 
-  const createOrder = (cartItems, shippingDetails, paymentDetails) => {
+  const createOrder = (cartItems, shippingDetails, paymentDetails, order_id) => {
     const newOrder = {
       id: `ORD-${Date.now()}`,
+      order_id: order_id ? order_id : `ORD-${Date.now()}`,
       items: [...cartItems],
       shippingDetails,
       paymentDetails,
@@ -26,17 +27,17 @@ export const OrderProvider = ({ children }) => {
       refundStatus: null
     }
 
-    setOrders([...orders, newOrder])
+    setOrders((prevOrders) => [...prevOrders, newOrder])
     setActiveOrder(newOrder)
     return newOrder
   }
 
   const getOrderById = (orderId) => {
-    return orders.find((order) => order.id === orderId)
+    return orders.find((order) => order.order_id === orderId)
   }
 
   const updateOrderStatus = (orderId, status) => {
-    const updatedOrders = orders.map((order) => (order.id === orderId ? { ...order, status } : order))
+    const updatedOrders = orders.map((order) => (order.order_id === orderId ? { ...order, status } : order))
     setOrders(updatedOrders)
   }
 

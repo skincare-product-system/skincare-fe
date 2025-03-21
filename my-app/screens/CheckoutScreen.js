@@ -23,51 +23,53 @@ export default function CheckoutScreen() {
     setIsLoading(true)
 
     try {
-      // Validate products array first
+      // Early validation with better error message
       if (!Array.isArray(products) || products.length === 0) {
-        throw new Error('Invalid products data')
+        throw new Error('No products in cart. Please add products before checkout.')
       }
 
-      const shippingAddress = {
-        fullName: profile?.fullName || profile?.name || 'Customer',
-        address: profile?.address || 'Default Address',
-        city: profile?.city || 'Default City',
-        phone: profile?.phone || '0123456789'
-      }
+      // Extract profile data processing to a separate function
+      const shippingAddress = getShippingAddressFromProfile(profile)
 
+      // Create a structured payload with null checks on each field
       const payload = {
         products: products.map((product) => ({
-          product_id: product?.product_id,
-          variation_id: product?._id,
+          product_id: product?.product_id || '',
+          variation_id: product?._id || '',
           quantity: 1,
-          price: product?.price
+          price: product?.price || 0
         })),
         shipping_address: shippingAddress,
-        customer_id: profile?.id || profile?._id
+        customer_id: profile?.id || profile?._id || 'guest'
       }
 
+      // Process payment
       const { data } = await paymentApi.createPayment(payload)
 
+      // More specific error for debugging
       if (!data?.result?.order_url) {
-        throw new Error('Missing payment URL in response')
+        throw new Error('Payment service did not return a valid payment URL')
       }
 
       const paymentUrl = data.result.order_url
       const zaloPayScheme = 'zalopay://'
-
-      const canOpenZaloPay = await Linking.canOpenURL(zaloPayScheme)
-
-      if (canOpenZaloPay) {
-        await Linking.openURL(paymentUrl)
-      }
-
       const orderId = data?.result?.order_id
 
-      if (data?.result?.return_code === 1) {
+      // Handle ZaloPay opening
+      await handleZaloPayment(zaloPayScheme, paymentUrl)
+
+      // Process successful order
+      if (data?.result?.return_code === 1 && orderId) {
         await createOrder(payload.products, shippingAddress, {}, orderId)
         navigation.navigate('OrderConfirmationScreen', { orderId })
+      } else if (data?.result) {
+        // Handle partial success cases
+        throw new Error(`Payment process incomplete: Code ${data.result.return_code || 'unknown'}`)
       }
     } catch (error) {
+      // Better error handling with logging
+      console.error('Checkout Error:', error)
+
       Toast.show({
         type: 'error',
         text1: 'Payment Error',
@@ -75,6 +77,31 @@ export default function CheckoutScreen() {
       })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // Helper functions for cleaner main function
+  const getShippingAddressFromProfile = (profile) => ({
+    fullName: profile?.fullName || profile?.name || 'Customer',
+    address: profile?.address || 'Default Address',
+    city: profile?.city || 'Default City',
+    phone: profile?.phone || '0123456789'
+  })
+
+  const handleZaloPayment = async (zaloPayScheme, paymentUrl) => {
+    try {
+      const canOpenZaloPay = await Linking.canOpenURL(zaloPayScheme)
+      if (canOpenZaloPay) {
+        await Linking.openURL(paymentUrl)
+      } else {
+        // Fallback for when app isn't installed
+        await Linking.openURL(paymentUrl)
+      }
+      return true
+    } catch (error) {
+      console.error('Error opening payment app:', error)
+      // Still return true to continue with order processing
+      return true
     }
   }
 

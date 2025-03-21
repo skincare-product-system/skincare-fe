@@ -5,7 +5,6 @@ import AccountScreen from '../screens/profile/AccountScreen'
 // import EditProfileScreen from '../screens/EditProfileScreen'
 import ChangePasswordScreen from '../screens/profile/ChangePasswordScreen'
 import HelpSupportScreen from '../screens/profile/HelpSupportScreen'
-import MyAddressScreen from '../screens/profile/MyAddressScreen'
 import NotificationScreen from '../screens/profile/NotificationScreen'
 import ProductReviewScreen from '../screens/profile/ProductReviewScreen'
 import ProductsToReviewScreen from '../screens/profile/ProductsToReviewScreen'
@@ -13,6 +12,7 @@ import ResetPasswordScreen from '../screens/profile/ResetPasswordScreen'
 import ReviewHistoryScreen from '../screens/profile/ReviewHistoryScreen'
 import UserInformation from '../screens/profile/UserInformation'
 import VoucherScreen from '../screens/profile/VoucherScreen'
+import AddressNavigator from './AddressNavigator'
 
 // import OrderHistoryScreen from '../screens/OrderHistoryScreen'
 
@@ -31,7 +31,7 @@ export default function AccountNavigator() {
       <Stack.Screen name='ProductsToReviewScreen' component={ProductsToReviewScreen} />
       <Stack.Screen name='ProductReviewScreen' component={ProductReviewScreen} />
       <Stack.Screen name='ReviewHistoryScreen' component={ReviewHistoryScreen} />
-      <Stack.Screen name='MyAddressScreen' component={MyAddressScreen} />
+      <Stack.Screen name='AddressNavigator' component={AddressNavigator} />
       <Stack.Screen name='HelpSupportScreen' component={HelpSupportScreen} />
 
       {/* <Stack.Screen name='OrderHistory' component={OrderHistoryScreen} /> */}

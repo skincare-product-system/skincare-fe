@@ -17,9 +17,12 @@ export default function QuizResultScreen() {
       const result = response.data.result
       result.map((item) => {
         if (item.min_score <= totalScore && totalScore <= item.max_score) {
+          console.log(item)
+
           setQuizResult(item)
         }
       })
+
       setIsLoading(false)
     }
     getQuizResult()
@@ -55,7 +58,7 @@ export default function QuizResultScreen() {
             </View>
 
             <Text style={{ fontSize: 25, fontWeight: '500', marginTop: 10 }}>Kết quả</Text>
-            <Text style={{ fontSize: 20, marginTop: 10, color: '#C14600' }}>{quizResult.result.type}</Text>
+            <Text style={{ fontSize: 20, marginTop: 10, color: '#C14600' }}>{quizResult.result.type || 'ahihi'}</Text>
             <TouchableOpacity
               style={{
                 marginTop: 20,

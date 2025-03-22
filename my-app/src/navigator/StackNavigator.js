@@ -1,8 +1,23 @@
 import { createStackNavigator } from '@react-navigation/stack'
 
-import { CartScreen, LoginScreen, ProductDetailScreen, ProductListScreen, RegisterScreen } from '../../screens'
+import {
+  CartScreen,
+  CheckoutScreen,
+  LoginScreen,
+  OrderConfirmationScreen,
+  OrderDetailsScreen,
+  OrderHistoryScreen,
+  OrderTrackingScreen,
+  ProductDetailScreen,
+  ProductListScreen,
+  RegisterScreen
+} from '../../screens'
 import QuizDetailScreen from '../../screens/quiz/QuizDetailScreen'
 import QuizResultScreen from '../../screens/quiz/QuizResultScreen'
+import SearchResultScreen from '../../screens/search/SearchResultScreen'
+import SearchScreen from '../../screens/search/SearchScreen'
+
+import OrderTrackingNavigator from './OrderTrackingNavigator'
 
 const Stack = createStackNavigator()
 
@@ -27,6 +42,13 @@ export default function StackNavigator() {
       <Stack.Screen name='CartScreen' component={CartScreen} options={{ headerShown: true, title: 'Cart' }} />
       <Stack.Screen name='QuizDetailScreen' component={QuizDetailScreen} />
       <Stack.Screen name='QuizResultScreen' component={QuizResultScreen} />
+      <Stack.Screen name='CheckoutScreen' component={CheckoutScreen} />
+      <Stack.Screen name='OrderConfirmationScreen' component={OrderConfirmationScreen} />
+      <Stack.Screen name='SearchScreen' component={SearchScreen} />
+      <Stack.Screen name='SearchResultScreen' component={SearchResultScreen} />
+      <Stack.Screen name='OrderTrackingScreen' component={OrderTrackingScreen} />
+      <Stack.Screen name='OrderTrackingNavigator' component={OrderTrackingNavigator} />
+      <Stack.Screen name='OrderDetailsScreen' component={OrderDetailsScreen} />
     </Stack.Navigator>
   )
 }

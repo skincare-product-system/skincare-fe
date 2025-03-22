@@ -15,24 +15,55 @@ export default function CartScreen() {
   const { setCartTotal } = useCart()
 
   useEffect(() => {
+    const loadCart = async () => {
+      const cartData = await loadCartItems()
+      setCart(cartData)
+    }
     loadCart()
   }, [])
 
-  const loadCart = async () => {
-    const cartData = await loadCartItems()
-    setCart(cartData)
+  const handleCheckout = async () => {
+    if (Object.keys(selectedItems).length === 0) {
+      Alert.alert('Thông báo', 'Vui lòng chọn sản phẩm để thanh toán')
+      return
+    }
+
+    const selectedProducts = Object.values(selectedItems).map((item) => ({
+      ...item.product,
+      quantity: item.quantity
+    }))
+
+    nav.navigate('CheckoutScreen', { products: selectedProducts })
   }
 
-  const toggleCheckbox = (id) => {
-    setSelectedItems((prev) => ({
-      ...prev,
-      [id]: !prev[id]
-    }))
+  const toggleCheckbox = (item) => {
+    setSelectedItems((prev) => {
+      const newSelected = { ...prev }
+
+      if (newSelected[item.product._id]) {
+        delete newSelected[item.product._id]
+      } else {
+        newSelected[item.product._id] = item
+      }
+
+      return newSelected
+    })
   }
 
   const updateQuantity = async (productId, newQuantity) => {
     const updatedCart = await updateItemQuantity(cart, productId, newQuantity)
-    if (updatedCart) setCart(updatedCart)
+    if (updatedCart) {
+      setCart(updatedCart)
+
+      // Nếu sản phẩm đang được chọn, cập nhật lại số lượng trong selectedItems
+      setSelectedItems((prev) => {
+        if (!prev[productId]) return prev // Nếu chưa chọn thì không làm gì cả
+        return {
+          ...prev,
+          [productId]: { ...prev[productId], quantity: newQuantity }
+        }
+      })
+    }
   }
 
   const removeItem = async (productId) => {
@@ -48,7 +79,7 @@ export default function CartScreen() {
       <View style={{ flexDirection: 'row', marginVertical: 10, alignItems: 'center' }}>
         <CheckBox
           checked={!!selectedItems[item.product._id]}
-          onPress={() => toggleCheckbox(item.product._id)}
+          onPress={() => toggleCheckbox(item)}
           containerStyle={{ padding: 0, margin: 0 }}
         />
         <Image source={{ uri: item.product.thumbnails[0] }} style={{ height: 70, width: 70, marginRight: 15 }} />
@@ -208,7 +239,7 @@ export default function CartScreen() {
               borderRadius: 30,
               margin: 10
             }}
-            onPress={() => {}}
+            onPress={() => handleCheckout()}
           >
             <Text style={{ color: 'white', fontWeight: '600', fontSize: 15 }}>{'Thanh toán'.toUpperCase()}</Text>
           </TouchableOpacity>

@@ -25,6 +25,13 @@ const authApi = {
     return await http.patch(`${userUrl}/me`, {
       ...payload
     })
+  },
+  async changePassword(oldPassword, newPassword, confirmPassword) {
+    return await http.put(`${userUrl}/change-password`, {
+      old_password: oldPassword,
+      password: newPassword,
+      confirm_password: confirmPassword
+    })
   }
 }
 export default authApi

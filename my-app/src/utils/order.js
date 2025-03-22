@@ -1,3 +1,5 @@
+import { ORDER_STATUS } from './constant'
+
 export const formatOrderDate = (dateString) => {
   return new Date(dateString).toLocaleDateString()
 }
@@ -73,13 +75,13 @@ export const formatDate = (dateString) => {
 
 export const getStatusColor = (status) => {
   switch (status) {
-    case 'processing':
+    case ORDER_STATUS.PENDING:
       return '#FFC107'
-    case 'shipped':
+    case ORDER_STATUS.DELIVERING:
       return '#2196F3'
-    case 'delivered':
+    case ORDER_STATUS.DELIVERED:
       return '#4CAF50'
-    case 'cancelled':
+    case ORDER_STATUS.CANCELLED:
       return '#F44336'
     default:
       return '#9E9E9E'

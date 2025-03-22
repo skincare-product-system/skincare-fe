@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import Entypo from '@expo/vector-icons/Entypo'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useEffect, useState } from 'react'
 import { View, FlatList, Text, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
@@ -10,14 +11,23 @@ import { formatNumber } from '../../../src/utils/utils'
 export default function ProductList() {
   const nav = useNavigation()
   const route = useRoute()
-  const { subItem } = route.params
+  const { subItem, brand } = route.params
   const [products, setProducts] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  console.log(subItem, brand)
 
   useEffect(() => {
     const getproductList = async () => {
       try {
-        const response = await productApi.getProductsByCategoryId(subItem._id)
+        let response = []
+        if (subItem) {
+          response = await productApi.getProductsByCategoryId(subItem._id)
+        } else if (brand) {
+          console.log(brand._id)
+
+          response = await productApi.getProductsByBrandId(brand._id)
+        }
+
         setProducts(response.data.result)
       } catch (error) {
         console.error(error)
@@ -26,7 +36,7 @@ export default function ProductList() {
       }
     }
     getproductList()
-  }, [subItem._id])
+  }, [subItem, brand])
 
   let adjustedProducts = []
   if (products.length > 0) {
@@ -35,13 +45,20 @@ export default function ProductList() {
 
   return (
     <View style={{ padding: 20, flex: 1 }}>
-      <Header />
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity onPress={() => nav.goBack()} style={{ padding: 5 }}>
+          <Entypo name='chevron-left' size={30} color='black' />
+        </TouchableOpacity>
+        <View style={{ flex: 1 }}>
+          <Header />
+        </View>
+      </View>
+
       <Text
         style={{ fontWeight: '500', fontSize: 24, paddingLeft: 10, paddingVertical: 10, textTransform: 'capitalize' }}
       >
-        {subItem.name}
+        {subItem ? subItem.name : brand.name}
       </Text>
-
       {isLoading ? (
         <ActivityIndicator size='large' color='#FA7070' style={{ marginTop: 20 }} />
       ) : products.length > 0 ? (

@@ -1,13 +1,41 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import Entypo from '@expo/vector-icons/Entypo'
+import EvilIcons from '@expo/vector-icons/EvilIcons'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { useEffect, useState } from 'react'
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-import { useOrder } from '../../src/context'
-import { getStatusColor } from '../../src/utils/order'
-import { getOrderById } from '../../src/utils/order'
+import orderApi from '../../src/apis/order.api'
+import { getDistrictName, getProvinceName, getWardName } from '../../src/utils/address'
+import { ORDER_STATUS } from '../../src/utils/constant'
+import { formatDate, getStatusColor } from '../../src/utils/order'
+import { formatNumber } from '../../src/utils/utils'
 
 const OrderDetailsScreen = ({ route, navigation }) => {
   const { orderId } = route.params
-  const { orders } = useOrder()
-  const order = getOrderById(orders, orderId)
+  const [order, setOrder] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
+  const [shippingDetails, setShippingDetails] = useState({})
+
+  useEffect(() => {
+    const getOrderDetail = async () => {
+      const response = await orderApi.getOrder(orderId)
+      if (response.status === 200) {
+        const provinceName = await getProvinceName(202)
+        const districtName = await getDistrictName(202, response.data.result.to_district_id)
+        const wardName = await getWardName(response.data.result.to_district_id, response.data.result.to_ward_code)
+
+        setShippingDetails({
+          address: response.data.result.shipping_address,
+          provinceName,
+          districtName,
+          wardName
+        })
+        setOrder(response.data.result)
+        setIsLoading(false)
+      }
+    }
+    getOrderDetail()
+  }, [orderId])
 
   if (!order) {
     return (
@@ -21,15 +49,31 @@ const OrderDetailsScreen = ({ route, navigation }) => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.orderHeader}>
-        <Text style={styles.title}>Order #{order.id}</Text>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.status) }]}>
-          <Text style={styles.statusText}>{order.status}</Text>
-        </View>
-      </View>
+    <>
+      {isLoading ? (
+        <ActivityIndicator size='large' color='#0000ff' />
+      ) : (
+        <ScrollView style={styles.container}>
+          {/* header & chevron */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20, gap: 10 }}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Entypo name='chevron-left' size={35} color='black' />
+            </TouchableOpacity>
+            <Text style={{ fontSize: 22, fontWeight: '500' }}>Thông tin đơn hàng</Text>
+          </View>
+          {/* thông tin đơn hàng */}
+          <View style={styles.orderHeader}>
+            <Text style={styles.title}>Đơn hàng #{order._id}</Text>
+            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.status) }]}>
+              <Text style={styles.statusText}>{order.status}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <MaterialIcons name='local-shipping' size={24} color='black' />
+              <Text style={{ color: 'gray' }}>{formatDate(order.expected_delivery_date)}</Text>
+            </View>
+          </View>
 
-      <View style={styles.section}>
+          {/* <View style={styles.section}>
         <Text style={styles.sectionTitle}>Items</Text>
         {order.items.map((item) => (
           <View key={item.id} style={styles.itemContainer}>
@@ -45,61 +89,65 @@ const OrderDetailsScreen = ({ route, navigation }) => {
             </View>
           </View>
         ))}
-      </View>
+      </View> */}
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Shipping Address</Text>
-        <Text style={styles.addressText}>{order.shippingDetails.fullName}</Text>
-        <Text style={styles.addressText}>{order.shippingDetails.address}</Text>
-        <Text style={styles.addressText}>{`${order.shippingDetails.city}, ${order.shippingDetails.postalCode}`}</Text>
-        <Text style={styles.addressText}>{order.shippingDetails.country}</Text>
-        <Text style={styles.addressText}>{order.shippingDetails.phone}</Text>
-      </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Địa chỉ nhận hàng</Text>
+            <View style={{ flexDirection: 'row', gap: 5 }}>
+              <Text style={styles.addressText}>{order.receiver_name}</Text>
+              <Text style={{ color: 'gray' }}>
+                (+84){order.phone_number.startsWith('0') ? order.phone_number.slice(1) : order.phone_number}
+              </Text>
+            </View>
+            <Text style={styles.addressText}>
+              <EvilIcons name='location' size={16} color='black' />
+              {shippingDetails.address}, {shippingDetails.wardName}
+              {', '}
+              {shippingDetails.districtName}
+              {', '}
+              {shippingDetails.provinceName}
+            </Text>
+          </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Payment Information</Text>
-        <Text style={styles.paymentText}>Card: **** **** **** {order.paymentDetails.cardNumber.slice(-4)}</Text>
-        <Text style={styles.paymentText}>Name: {order.paymentDetails.cardName}</Text>
-      </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Thông tin sản phẩm</Text>
+            {order.orderDetail.map((item) => (
+              <View key={item.product_id} style={styles.itemContainer}>
+                <Image source={{ uri: item.images[0] }} style={styles.itemImage} />
+                <View style={styles.itemDetails}>
+                  <Text style={styles.itemName}>{item.name}</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Order Summary</Text>
-        <View style={styles.summaryRow}>
-          <Text>Subtotal</Text>
-          <Text>${(order.total - order.total * 0.1 - 5).toFixed(2)}</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text>Shipping</Text>
-          <Text>$5.00</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text>Tax</Text>
-          <Text>${(order.total * 0.1).toFixed(2)}</Text>
-        </View>
-        <View style={[styles.summaryRow, styles.totalRow]}>
-          <Text style={styles.totalText}>Total</Text>
-          <Text style={styles.totalAmount}>${order.total.toFixed(2)}</Text>
-        </View>
-      </View>
+                  <Text style={styles.itemQuantity}>Số lượng: {item.quantity}</Text>
+                  <Text style={styles.itemPrice}>{formatNumber(item.price)} ₫</Text>
+                </View>
+              </View>
+            ))}
 
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity
-          style={styles.trackButton}
-          onPress={() => navigation.navigate('OrderTracking', { orderId: order.id })}
-        >
-          <Text style={styles.trackButtonText}>Track Order</Text>
-        </TouchableOpacity>
+            <View style={styles.summaryRow}>
+              <Text>Tổng tiền hàng</Text>
+              <Text>{formatNumber(order.estimate_price)} ₫</Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text>Phí vận chuyển</Text>
+              <Text>{order.shipping_fee} ₫</Text>
+            </View>
 
-        {order.status !== 'cancelled' && !order.refundStatus && (
-          <TouchableOpacity
-            style={styles.refundButton}
-            onPress={() => navigation.navigate('RequestRefund', { orderId: order.id })}
-          >
-            <Text style={styles.refundButtonText}>Request Refund</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    </ScrollView>
+            <View style={[styles.summaryRow, styles.totalRow]}>
+              <Text style={styles.totalText}>Thành tiền</Text>
+              <Text style={styles.totalAmount}>{formatNumber(order.end_price)} ₫</Text>
+            </View>
+          </View>
+
+          <View style={styles.actionsContainer}>
+            {[ORDER_STATUS.PENDING, ORDER_STATUS.DELIVERING].includes(order.status) && (
+              <TouchableOpacity style={styles.refundButton}>
+                <Text style={styles.refundButtonText}>Hủy Đơn</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </ScrollView>
+      )}
+    </>
   )
 }
 
@@ -110,19 +158,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   orderHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    // flexDirection: 'row',
+    // justifyContent: 'space-between',
     marginBottom: 20
   },
   title: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: 'bold'
   },
   statusBadge: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 12
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    flexShrink: 1,
+    marginVertical: 10,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    minWidth: 'auto'
   },
   statusText: {
     color: '#fff',
@@ -158,7 +209,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   itemName: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '500',
     marginBottom: 4
   },
@@ -168,7 +219,8 @@ const styles = StyleSheet.create({
     marginBottom: 4
   },
   itemPrice: {
-    fontSize: 15,
+    fontSize: 14,
+    color: '#FA7070',
     fontWeight: 'bold'
   },
   addressText: {

@@ -10,6 +10,9 @@ const productApi = {
   },
   async getProductsByVariationId(variationId) {
     return await http.get(`${productUrl}?variation_id=${variationId}`)
+  },
+  async getProductsByBrandId(brandId) {
+    return await http.get(`${productUrl}?brand_id=${brandId}`)
   }
 }
 export default productApi

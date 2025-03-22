@@ -1,22 +1,24 @@
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Feather from '@expo/vector-icons/Feather'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useFocusEffect, useNavigation } from '@react-navigation/native'
-import { useCallback, useEffect, useState } from 'react'
+import { useNavigation } from '@react-navigation/native'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
 import { useCart } from '../../context/CartContext'
 
 export default function Header() {
   const { cartTotal } = useCart()
-  const [isAuthenticated] = useState(false)
   const navigation = useNavigation()
+
   return (
     <View>
       <View style={styles.headerContainer}>
-        <View style={styles.searchBarContainer}>
-          <TextInput style={styles.searchBarInput} placeholder='Tìm sản phẩm...' />
-        </View>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('StackNavigator', { screen: 'SearchScreen' })}
+          style={styles.searchBarContainer}
+          activeOpacity={1}
+        >
+          <TextInput style={styles.searchBarInput} placeholder='Tìm sản phẩm...' editable={false} />
+        </TouchableOpacity>
 
         <Feather name='box' size={30} color='#3D3D3D' />
 

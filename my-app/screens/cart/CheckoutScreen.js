@@ -1,339 +1,260 @@
-import { useState } from 'react'
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+/* eslint-disable no-console */
+import Entypo from '@expo/vector-icons/Entypo'
+import { CommonActions, useNavigation, useRoute } from '@react-navigation/native'
+import { useEffect, useState } from 'react'
+import { ActivityIndicator, Linking, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, Image } from 'react-native'
 
-import { useCart, useOrder } from '../../src/context'
+import addressApi from '../../src/apis/address.api'
+import paymentApi from '../../src/apis/payments.api'
+import shipApi from '../../src/apis/ship.api'
+import { useCart } from '../../src/context/CartContext'
+import { getDistrictName, getProvinceName, getWardName } from '../../src/utils/address'
+import { loadCartItems, removeCartItem } from '../../src/utils/cart'
+import { formatNumber } from '../../src/utils/utils'
 
-const CheckoutScreen = ({ navigation }) => {
-  const { cartItems, cartTotal, clearCart } = useCart()
-  const { createOrder } = useOrder()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errors, setErrors] = useState({})
+export default function CheckoutScreen() {
+  const route = useRoute()
+  const nav = useNavigation()
+  const [address, setAddress] = useState({})
+  const [shippingFee, setShippingFee] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
+  const { products, quantity } = route.params
+  const { setCartTotal, setCartItems } = useCart()
 
-  const [shippingDetails, setShippingDetails] = useState({
-    fullName: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    country: '',
-    phone: ''
-  })
+  const handleEditShippingAddress = () => {
+    console.log(123)
 
-  const [paymentDetails, setPaymentDetails] = useState({
-    cardName: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: ''
-  })
+    // nav.navigate('BottomTabNavigator', {
+    //   screen: 'AccountNavigator',
+    //   params: {
+    //     screen: 'AddressNavigator',
+    //     params: {
+    //       screen: 'MyAddressScreen',
+    //       params: { fromCheckout: true }
+    //     }
+    //   }
+    // })
 
-  const handleShippingChange = (field, value) => {
-    setShippingDetails((prev) => ({ ...prev, [field]: value }))
+    // nav.navigate('BottomTabNavigator', {
+    //   screen: 'AccountNavigator',
+    //   params: {
+    //     screen: 'AddressNavigator',
+    //     params: {
+    //       screen: 'MyAddressScreen',
+    //       fromCheckout: true
+    //     }
+    //   }
+    // })
+    nav.dispatch(
+      CommonActions.navigate({
+        name: 'BottomTabNavigator',
+        params: {
+          screen: 'AccountNavigator',
+          params: {
+            screen: 'AddressNavigator',
+            params: {
+              screen: 'MyAddressScreen',
+              fromCheckout: true // Cần đặt params ở đây, không lồng trong `params`
+            }
+          }
+        }
+      })
+    )
+    console.log(nav.getState())
   }
 
-  const handlePaymentChange = (field, value) => {
-    setPaymentDetails((prev) => ({ ...prev, [field]: value }))
-  }
+  useEffect(() => {
+    const getShippingAddress = async () => {
+      const response = await addressApi.getDefaultAddress()
+      const provinceName = await getProvinceName(response.data.result.province_code)
+      const districtName = await getDistrictName(response.data.result.province_code, response.data.result.district_code)
+      const wardName = await getWardName(response.data.result.district_code, response.data.result.ward_code)
 
-  const validateForm = () => {
-    const newErrors = {}
+      const newAddress = {
+        ...response.data.result,
+        province_name: provinceName,
+        district_name: districtName,
+        ward_name: wardName
+      }
+      setAddress(newAddress)
 
-    // Xác thực thông tin giao hàng
-    if (!shippingDetails.fullName.trim()) newErrors.fullName = 'Tên là bắt buộc'
-    if (!shippingDetails.address.trim()) newErrors.address = 'Địa chỉ là bắt buộc'
-    if (!shippingDetails.city.trim()) newErrors.city = 'Thành phố là bắt buộc'
-    if (!shippingDetails.postalCode.trim()) newErrors.postalCode = 'Mã bưu điện là bắt buộc'
-    if (!shippingDetails.country.trim()) newErrors.country = 'Quốc gia là bắt buộc'
+      // Gọi API lấy phí vận chuyển ngay sau khi có địa chỉ
+      const shippingResponse = await shipApi.getShippingFee({
+        to_district_id: newAddress.district_code,
+        to_ward_code: String(newAddress.ward_code)
+      })
+      setShippingFee(shippingResponse.data.result.total)
 
-    // Xác thực số điện thoại với mẫu cơ bản
-    const phonePattern = /^\d{10,}$/
-    if (!shippingDetails.phone.trim()) {
-      newErrors.phone = 'Số điện thoại là bắt buộc'
-    } else if (!phonePattern.test(shippingDetails.phone.replace(/[^0-9]/g, ''))) {
-      newErrors.phone = 'Vui lòng nhập số điện thoại hợp lệ'
+      setIsLoading(false)
     }
+    getShippingAddress()
+  }, [])
 
-    // Xác thực thông tin thanh toán
-    if (!paymentDetails.cardName.trim()) newErrors.cardName = 'Tên trên thẻ là bắt buộc'
-
-    // Xác thực số thẻ
-    const cardNumberClean = paymentDetails.cardNumber.replace(/\s/g, '')
-    if (!cardNumberClean) {
-      newErrors.cardNumber = 'Số thẻ là bắt buộc'
-    } else if (!/^\d{16}$/.test(cardNumberClean)) {
-      newErrors.cardNumber = 'Vui lòng nhập số thẻ 16 chữ số hợp lệ'
+  // Thanh toán
+  const handleCheckout = async () => {
+    const payload = {
+      to_district_id: address.district_code,
+      to_ward_code: String(address.ward_code),
+      products: products.map((product) => ({
+        product_id: product.product_id,
+        name: product.name,
+        variation_id: product._id,
+        quantity: quantity ? quantity : product.quantity,
+        price: product.price
+      })),
+      receiver_name: address.receiver_name,
+      phone_number: address.phone_number,
+      address: address.address
     }
+    console.log('payload', payload)
 
-    // Xác thực định dạng ngày hết hạn (MM/YY)
-    if (!paymentDetails.expiryDate.trim()) {
-      newErrors.expiryDate = 'Ngày hết hạn là bắt buộc'
-    } else if (!/^\d{2}\/\d{2}$/.test(paymentDetails.expiryDate)) {
-      newErrors.expiryDate = 'Sử dụng định dạng MM/YY'
-    }
+    const response = await paymentApi.createPayment(payload)
 
-    // Xác thực CVV
-    if (!paymentDetails.cvv.trim()) {
-      newErrors.cvv = 'CVV là bắt buộc'
-    } else if (!/^\d{3}$/.test(paymentDetails.cvv)) {
-      newErrors.cvv = 'Nhập CVV 3 chữ số'
-    }
+    Linking.openURL(response.data.result.order_url).catch((err) => console.error('Không thể mở URL:', err))
+    if (response.data.result.return_code === 1) {
+      // xóa cart
+      console.log(123)
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handlePlaceOrder = async () => {
-    if (!validateForm()) {
-      Alert.alert('Lỗi xác thực', 'Vui lòng kiểm tra lỗi trong biểu mẫu')
-      return
-    }
-
-    try {
-      setIsSubmitting(true)
-
-      // Định dạng dữ liệu trước khi gửi
-      const formattedShippingDetails = {
-        ...shippingDetails,
-        fullName: shippingDetails.fullName.trim(),
-        phone: shippingDetails.phone.replace(/[^0-9]/g, '')
+      const cart = await loadCartItems()
+      console.log('cart', cart)
+      for (const product of products) {
+        await removeCartItem(cart, product.product_id)
       }
 
-      const formattedPaymentDetails = {
-        ...paymentDetails,
-        cardNumber: paymentDetails.cardNumber.replace(/\s/g, ''),
-        cardName: paymentDetails.cardName.trim()
-      }
-
-      const order = await createOrder(cartItems, formattedShippingDetails, formattedPaymentDetails)
-      clearCart()
-      navigation.navigate('OrderConfirmation', { orderId: order.id })
-    } catch (error) {
-      Alert.alert('Lỗi', 'Có vấn đề xảy ra khi xử lý đơn hàng của bạn. Vui lòng thử lại.', [{ text: 'OK' }])
-      console.error('Lỗi gửi đơn hàng:', error)
-    } finally {
-      setIsSubmitting(false)
+      setCartTotal(cart.length)
+      nav.navigate('OrderConfirmationScreen', { orderId: response.data.result.order_id, address })
+      console.log('Thanh toán thành công', response.data.result.order_id)
     }
-  }
-
-  const renderErrorMessage = (fieldName) => {
-    if (errors[fieldName]) {
-      return <Text style={styles.errorText}>{errors[fieldName]}</Text>
-    }
-    return null
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Checkout</Text>
+    <View>
+      {isLoading ? (
+        <ActivityIndicator size='large' color='#F38C79' />
+      ) : (
+        <ScrollView>
+          {/* địa chỉ giao hàng */}
+          <View style={{ backgroundColor: '#FFC1B4' }}>
+            <View style={{ backgroundColor: 'white', padding: 10, margin: 20, borderRadius: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {/* Địa chỉ nhận hàng + Mặc định */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                  <Text style={{ color: '#F38C79', fontWeight: '500' }}>địa chỉ nhận hàng</Text>
+                  <View style={{ backgroundColor: '#F38C79', padding: 5, borderRadius: 10, marginLeft: 10 }}>
+                    <Text style={{ color: 'white', fontSize: 12 }}>Mặc định</Text>
+                  </View>
+                </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Shipping Information</Text>
-        <TextInput
-          style={[styles.input, errors.fullName && styles.inputError]}
-          placeholder='Full Name'
-          value={shippingDetails.fullName}
-          onChangeText={(text) => handleShippingChange('fullName', text)}
-        />
-        {renderErrorMessage('fullName')}
+                {/* Thay đổi + Chevron */}
+                <TouchableOpacity
+                  style={{ flexDirection: 'row', alignItems: 'center' }}
+                  onPress={() => {
+                    console.log(123)
 
-        <TextInput
-          style={[styles.input, errors.address && styles.inputError]}
-          placeholder='Address'
-          value={shippingDetails.address}
-          onChangeText={(text) => handleShippingChange('address', text)}
-        />
-        {renderErrorMessage('address')}
-
-        <TextInput
-          style={[styles.input, errors.city && styles.inputError]}
-          placeholder='City'
-          value={shippingDetails.city}
-          onChangeText={(text) => handleShippingChange('city', text)}
-        />
-        {renderErrorMessage('city')}
-
-        <TextInput
-          style={[styles.input, errors.postalCode && styles.inputError]}
-          placeholder='Postal Code'
-          value={shippingDetails.postalCode}
-          onChangeText={(text) => handleShippingChange('postalCode', text)}
-        />
-        {renderErrorMessage('postalCode')}
-
-        <TextInput
-          style={[styles.input, errors.country && styles.inputError]}
-          placeholder='Country'
-          value={shippingDetails.country}
-          onChangeText={(text) => handleShippingChange('country', text)}
-        />
-        {renderErrorMessage('country')}
-
-        <TextInput
-          style={[styles.input, errors.phone && styles.inputError]}
-          placeholder='Phone Number'
-          value={shippingDetails.phone}
-          onChangeText={(text) => handleShippingChange('phone', text)}
-          keyboardType='phone-pad'
-        />
-        {renderErrorMessage('phone')}
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Payment Information</Text>
-        <TextInput
-          style={[styles.input, errors.cardName && styles.inputError]}
-          placeholder='Name on Card'
-          value={paymentDetails.cardName}
-          onChangeText={(text) => handlePaymentChange('cardName', text)}
-        />
-        {renderErrorMessage('cardName')}
-
-        <TextInput
-          style={[styles.input, errors.cardNumber && styles.inputError]}
-          placeholder='Card Number'
-          value={paymentDetails.cardNumber}
-          onChangeText={(text) => handlePaymentChange('cardNumber', text)}
-          keyboardType='number-pad'
-          maxLength={16}
-        />
-        {renderErrorMessage('cardNumber')}
-
-        <View style={styles.row}>
-          <View style={{ flex: 1, marginRight: 10 }}>
-            <TextInput
-              style={[styles.input, errors.expiryDate && styles.inputError]}
-              placeholder='MM/YY'
-              value={paymentDetails.expiryDate}
-              onChangeText={(text) => handlePaymentChange('expiryDate', text)}
-              maxLength={5}
-            />
-            {renderErrorMessage('expiryDate')}
+                    handleEditShippingAddress()
+                  }}
+                >
+                  <Text>Thay đổi</Text>
+                  <Entypo name='chevron-small-right' size={24} color='black' />
+                </TouchableOpacity>
+              </View>
+              <View>
+                <View style={{ flexDirection: 'row', gap: 5 }}>
+                  <Text style={{ fontWeight: '500' }}>{address.receiver_name}</Text>
+                  <Text style={{ fontWeight: '500' }}>-</Text>
+                  <Text style={{ fontWeight: '500' }}>{address.phone_number}</Text>
+                </View>
+                <Text style={{ color: 'gray', fontSize: 12 }}>
+                  {address.address}, {address.ward_name}, {address.district_name}, {address.province_name}
+                </Text>
+              </View>
+            </View>
           </View>
 
-          <View style={{ flex: 1 }}>
-            <TextInput
-              style={[styles.input, errors.cvv && styles.inputError]}
-              placeholder='CVV'
-              value={paymentDetails.cvv}
-              onChangeText={(text) => handlePaymentChange('cvv', text)}
-              keyboardType='number-pad'
-              maxLength={3}
-              secureTextEntry
-            />
-            {renderErrorMessage('cvv')}
+          {/* danh sách sản phẩm */}
+          <View style={{ paddingVertical: 20, paddingHorizontal: 10 }}>
+            <Text style={{ fontWeight: '600' }}>Danh sách sản phẩm</Text>
+            <Text style={{ color: 'gray' }}>Tổng: {products.length} sản phẩm</Text>
+            {products.map((product) => (
+              <View key={product._id} style={{ flexDirection: 'row', marginTop: 20 }}>
+                <Image source={{ uri: product.images[0] }} style={{ width: 100, height: 100, borderRadius: 10 }} />
+                <View style={{ flex: 1, marginLeft: 10 }}>
+                  <Text style={{ fontWeight: '600' }}>{product.name}</Text>
+                  <View>
+                    {Object.entries(product.attributes).map(([key, value]) => (
+                      <Text key={key} style={{ color: 'gray', fontWeight: '500', fontSize: 11 }}>
+                        {key}: {value}
+                      </Text>
+                    ))}
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                      <Text style={{ color: 'gray', fontSize: 12 }}>Thành tiền: </Text>
+                      <Text style={{ fontWeight: '500', fontSize: 12 }}>{formatNumber(product.price)}₫</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                      <Text style={{ color: 'gray', fontSize: 12 }}>Số lượng: </Text>
+                      <Text style={{ fontWeight: '500', fontSize: 12 }}>{quantity ? quantity : product.quantity}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ))}
           </View>
-        </View>
-      </View>
 
-      <View style={styles.summarySection}>
-        <Text style={styles.sectionTitle}>Order Summary</Text>
-        <View style={styles.summaryRow}>
-          <Text>Subtotal ({cartItems.length} items)</Text>
-          <Text>${cartTotal.toFixed(2)}</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text>Shipping</Text>
-          <Text>$5.00</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text>Tax</Text>
-          <Text>${(cartTotal * 0.1).toFixed(2)}</Text>
-        </View>
-        <View style={[styles.summaryRow, styles.totalRow]}>
-          <Text style={styles.totalText}>Total</Text>
-          <Text style={styles.totalAmount}>${(cartTotal + 5 + cartTotal * 0.1).toFixed(2)}</Text>
-        </View>
-      </View>
+          {/* Tổng tiền */}
+          <View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
+              <Text style={{ color: 'gray' }}>Tổng tiền</Text>
+              <Text style={{ fontWeight: '600' }}>
+                {quantity
+                  ? formatNumber(products.reduce((acc, cur) => acc + cur.price * quantity, 0))
+                  : formatNumber(products.reduce((acc, cur) => acc + cur.price * cur.quantity, 0))}
+                ₫
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
+              <Text style={{ color: 'gray' }}>Phí vận chuyển</Text>
+              <Text style={{ fontWeight: '600' }}>{formatNumber(shippingFee)}₫</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
+              <Text style={{ color: 'gray' }}>Tổng cộng</Text>
+              <Text style={{ fontWeight: '600' }}>
+                {quantity
+                  ? formatNumber(products.reduce((acc, cur) => acc + cur.price * quantity, 0) + shippingFee)
+                  : formatNumber(products.reduce((acc, cur) => acc + cur.price * cur.quantity, 0) + shippingFee)}
+                ₫
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
+              <Text style={{ color: 'gray' }}>Phương thức thanh toán</Text>
+              <Text style={{ fontWeight: '600' }}>zalopay</Text>
+            </View>
+          </View>
 
-      <TouchableOpacity
-        style={[styles.placeOrderButton, isSubmitting && styles.disabledButton]}
-        onPress={handlePlaceOrder}
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? (
-          <ActivityIndicator color='#fff' />
-        ) : (
-          <Text style={styles.placeOrderButtonText}>Place Order</Text>
-        )}
-      </TouchableOpacity>
-    </ScrollView>
+          {/* Btn thanh toán */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#F38C79',
+              padding: 10,
+              margin: 10,
+              borderRadius: 10,
+              alignItems: 'center'
+            }}
+            onPress={() => handleCheckout()}
+          >
+            <Text style={{ color: 'white', fontWeight: '600' }}>Thanh toán</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      )}
+    </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff'
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20
-  },
-  section: {
-    marginBottom: 20
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 5,
-    padding: 12,
-    marginBottom: 10
-  },
-  row: {
-    flexDirection: 'row'
-  },
-  summarySection: {
-    marginBottom: 20
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0'
-  },
-  totalRow: {
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    paddingTop: 10,
-    marginTop: 5
-  },
-  totalText: {
-    fontWeight: 'bold'
-  },
-  totalAmount: {
-    fontWeight: 'bold',
-    fontSize: 18
-  },
-  placeOrderButton: {
-    backgroundColor: '#4CAF50',
-    padding: 16,
-    borderRadius: 5,
-    marginBottom: 30
-  },
-  placeOrderButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 16
-  },
-  inputError: {
-    borderColor: 'red'
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginBottom: 8,
-    marginTop: -5
-  },
-  disabledButton: {
-    backgroundColor: '#a9a9a9'
-  }
-})
-
-export default CheckoutScreen

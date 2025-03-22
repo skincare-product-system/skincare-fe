@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import AntDesign from '@expo/vector-icons/AntDesign'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
+import { HttpStatusCode } from 'axios'
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, TextInput, TouchableOpacity } from 'react-native'
 import { View, Text } from 'react-native'
 import ActionSheet from 'react-native-actions-sheet'
@@ -9,15 +10,19 @@ import Markdown from 'react-native-markdown-display'
 import Toast from 'react-native-toast-message'
 
 import productApi from '../../src/apis/products.api'
+import wishListApi from '../../src/apis/wishlist.api'
 import { Header } from '../../src/components'
 import ImageSlider from '../../src/components/ImageSlider'
 import { useCart } from '../../src/context/CartContext'
 import { formatNumber } from '../../src/utils/utils'
+import { set } from 'react-hook-form'
 
 const { useState, useEffect, useRef } = require('react')
 
 export default function ProductDetailScreen() {
   const route = useRoute()
+  const nav = useNavigation()
+  const [isFavorite, setIsFavorite] = useState(false)
   const [product, setProduct] = useState({})
   const { productDetail } = route.params
   const [groupedAttributes, setGroupedAttributes] = useState({})
@@ -29,6 +34,19 @@ export default function ProductDetailScreen() {
   const [quantity, setQuantity] = useState(1)
   const [selectedVariantId, setSelectedVariantId] = useState(null)
   const { cartTotal, setCartTotal } = useCart()
+
+  // Kiểm tra sản phẩm đã có trong danh sách yêu thích chưa
+  useEffect(() => {
+    const getWishList = async () => {
+      const response = await wishListApi.getWishList()
+      const isFavorite = response.data.result.find((item) => item.variant_id.toString() === productDetail._id)
+      if (isFavorite) {
+        setIsFavorite(true)
+      }
+      setIsLoading(false)
+    }
+    getWishList()
+  }, [productDetail])
 
   const increaseQuantity = () => {
     if (quantity < product.quantity) {
@@ -82,6 +100,7 @@ export default function ProductDetailScreen() {
     })
 
     setGroupedAttributes(newGroupedAttributes)
+    setIsLoading(false)
   }, [products])
 
   useEffect(() => {
@@ -90,6 +109,7 @@ export default function ProductDetailScreen() {
         const response = await productApi.getProductsByCategoryId(product.category_id)
         const data = response.data.result.filter((item) => item.product_id != product.product_id)
         setSimilarProducts(data)
+        setIsLoading(false)
       } catch (error) {
         console.log('error: ', error.response.data.errors)
       }
@@ -144,6 +164,8 @@ export default function ProductDetailScreen() {
       if (index !== -1) {
         cart[index].quantity = totalQuantity
       } else {
+        console.log('product', product)
+
         cart.push({ product, quantity })
       }
       setCartTotal(cartTotal + 1)
@@ -162,6 +184,48 @@ export default function ProductDetailScreen() {
   const handleChangeBgColor = (variantId) => {
     setSelectedVariantId((prevId) => (prevId === variantId ? null : variantId))
   }
+
+  const handleBuyNow = async () => {
+    // Linking.openURL(response.data.result.order_url).catch((err) => console.error('Không thể mở URL:', err))
+    nav.navigate('CheckoutScreen', { products: [product], quantity: 1 })
+  }
+
+  const handleAddToWishlist = async () => {
+    try {
+      setIsFavorite((prev) => !prev)
+
+      if (isFavorite) {
+        // Nếu đã yêu thích → Gọi API xóa
+        const response = await wishListApi.deleteFromWishList(product.product_id, product._id)
+        console.log('Response xóa:', response.data)
+
+        if (response.status === HttpStatusCode.Ok) {
+          Toast.show({
+            type: 'success',
+            text1: response.data.message
+          })
+        }
+      } else {
+        // Nếu chưa yêu thích → Gọi API thêm
+        const response = await wishListApi.addToWishList(product.product_id, product._id)
+
+        if (response.status === HttpStatusCode.Ok) {
+          const { createdAt, updatedAt } = response.data.result
+          Toast.show({
+            type: 'success',
+            text1: 'Đã thêm vào danh sách yêu thích'
+          })
+        }
+      }
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Có lỗi xảy ra, vui lòng thử lại'
+      })
+      setIsFavorite((prev) => !prev)
+    }
+  }
+
   return (
     <>
       <View>
@@ -316,6 +380,14 @@ export default function ProductDetailScreen() {
           elevation: 5
         }}
       >
+        {/* nút yêu thích */}
+        <TouchableOpacity onPress={() => handleAddToWishlist()}>
+          {isFavorite ? (
+            <AntDesign name='heart' size={24} color='red' />
+          ) : (
+            <AntDesign name='hearto' size={24} color='black' />
+          )}
+        </TouchableOpacity>
         <TouchableOpacity
           style={{
             margin: 5,
@@ -333,11 +405,11 @@ export default function ProductDetailScreen() {
           <Text style={{ color: 'white', fontWeight: '500' }}>Thêm vào giỏ</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={() => handleBuyNow()}
           style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#FF9D3D', borderRadius: 50 }}
         >
           <Text style={{ color: 'white', fontWeight: '500' }}>Mua ngay</Text>
         </TouchableOpacity>
-
         {/* actionsheet chọn số lượng & variation */}
         <ActionSheet ref={actionSheetRef} gestureEnabled>
           <View style={{ padding: 20 }}>

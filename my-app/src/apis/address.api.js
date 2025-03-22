@@ -30,6 +30,9 @@ const addressApi = {
       address: payload.address,
       is_default: payload.is_default
     })
+  },
+  async getDefaultAddress() {
+    return await http.get(`${addressUrl}/default`)
   }
 }
 export default addressApi

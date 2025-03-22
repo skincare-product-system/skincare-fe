@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
-import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useEffect, useState, useCallback } from 'react'
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from 'react-native'
 import { StyleSheet } from 'react-native'
+import { CheckBox } from 'react-native-elements'
 import Toast from 'react-native-toast-message'
 
 import addressApi from '../../src/apis/address.api'
@@ -13,11 +14,16 @@ import { getDistrictName, getProvinceName, getWardName } from '../../src/utils/a
 
 export default function MyAddressScreen() {
   const nav = useNavigation()
+  const route = useRoute
+  const fromCheckout = route.params?.fromCheckout || false
+
+  const [selectedAddress, setSelectedAddress] = useState(null)
 
   const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
   const [name, setName] = useState('')
   const [isDefault, setIsDefault] = useState(false)
+  console.log(fromCheckout)
 
   // State cho danh sách tỉnh/thành phố, quận/huyện, xã/phường
   const [provinces, setProvinces] = useState([])
@@ -132,6 +138,13 @@ export default function MyAddressScreen() {
               <View key={address._id} style={styles.addressCard}>
                 <View style={styles.addressHeader}>
                   <View style={styles.nameContainer}>
+                    {fromCheckout && (
+                      <CheckBox
+                        checked={selectedAddress === address._id}
+                        onPress={() => setSelectedAddress(address._id)}
+                        containerStyle={{ padding: 0, margin: 0 }}
+                      />
+                    )}
                     <Text style={styles.name}>{address.receiver_name}</Text>
                     {address.is_default && (
                       <View style={styles.defaultBadge}>

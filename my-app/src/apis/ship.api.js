@@ -10,6 +10,13 @@ const shipApi = {
   },
   async getWards(districtId) {
     return await http.post(`${shipUrl}/wards`, { district_id: districtId })
+  },
+  async getShippingFee(payload) {
+    const { to_district_id, to_ward_code } = payload
+    return await http.post(`${shipUrl}/fee`, {
+      to_district_id,
+      to_ward_code
+    })
   }
 }
 export default shipApi

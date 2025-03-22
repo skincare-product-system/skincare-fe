@@ -1,30 +1,42 @@
+/* eslint-disable no-console */
 import { Ionicons } from '@expo/vector-icons'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BackHandler, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-import { useOrder } from '../../src/context/OrderContext'
-import { formatCurrency, formatOrderDate, formatShippingAddress } from '../../src/utils/order'
+import orderApi from '../../src/apis/order.api'
+import { formatCurrency, formatOrderDate, formatOrderDateTime } from '../../src/utils/order'
+import { formatNumber } from '../../src/utils/utils'
 
 const OrderConfirmationScreen = ({ navigation, route }) => {
-  const { orderId } = route.params
-  const { getOrderById } = useOrder()
-  const order = getOrderById(orderId)
+  const { orderId, address } = route.params
+  const [order, setOrder] = useState({})
+
+  useEffect(() => {
+    const getOrderById = async () => {
+      const response = await orderApi.getOrder(orderId)
+      setOrder(response.data.result)
+    }
+    getOrderById()
+  }, [orderId])
 
   // Prevent going back to checkout after order is placed
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      navigation.navigate('Home')
+      navigation.navigate('BottomTabNavigator', { screen: 'Home' })
       return true
     })
 
     return () => backHandler.remove()
   }, [navigation])
 
-  if (!order) {
+  if (!orderId) {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Order information not found</Text>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('BottomTabNavigator', { screen: 'Home' })}
+        >
           <Text style={styles.buttonText}>Return to Home</Text>
         </TouchableOpacity>
       </View>
@@ -39,26 +51,29 @@ const OrderConfirmationScreen = ({ navigation, route }) => {
         </View>
       </View>
 
-      <Text style={styles.title}>Order Confirmed!</Text>
-      <Text style={styles.subtitle}>Your order has been placed successfully.</Text>
+      <Text style={styles.title}>Xác nhận đơn hàng!</Text>
+      <Text style={styles.subtitle}>Đơn hàng của bạn đã được đặt thành công.</Text>
 
       <View style={styles.orderInfoContainer}>
-        <Text style={styles.orderInfoTitle}>Order Information</Text>
+        <Text style={styles.orderInfoTitle}>Thông tin đơn hàng</Text>
         <View style={styles.orderInfoRow}>
           <Text style={styles.orderInfoLabel}>Order ID:</Text>
-          <Text style={styles.orderInfoValue}>{order.id}</Text>
+          <Text style={styles.orderInfoValue}>{orderId}</Text>
         </View>
+
         <View style={styles.orderInfoRow}>
-          <Text style={styles.orderInfoLabel}>Date:</Text>
+          <Text style={styles.orderInfoLabel}>Ngày đặt:</Text>
           <Text style={styles.orderInfoValue}>{formatOrderDate(order.createdAt)}</Text>
         </View>
         <View style={styles.orderInfoRow}>
-          <Text style={styles.orderInfoLabel}>Total Amount:</Text>
-          <Text style={styles.orderInfoValue}>{formatCurrency(order.total)}</Text>
+          <Text style={styles.orderInfoLabel}>Tổng tiền:</Text>
+          <Text style={styles.orderInfoValue}>{formatNumber(order.end_price)}₫</Text>
         </View>
         <View style={styles.orderInfoRow}>
-          <Text style={styles.orderInfoLabel}>Shipping Address:</Text>
-          <Text style={styles.orderInfoValue}>{formatShippingAddress(order.shippingDetails)}</Text>
+          <Text style={styles.orderInfoLabel}>Địa chỉ:</Text>
+          <Text style={styles.orderInfoValue}>
+            {address.address}, {address.ward_name}, {address.district_name}, {address.province_name}
+          </Text>
         </View>
       </View>
 
@@ -67,11 +82,14 @@ const OrderConfirmationScreen = ({ navigation, route }) => {
           style={styles.trackButton}
           onPress={() => navigation.navigate('OrderTracking', { orderId: order.id })}
         >
-          <Text style={styles.trackButtonText}>Track Order</Text>
+          <Text style={styles.trackButtonText}>Theo dõi đơn hàng</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.continueButton} onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.continueButtonText}>Continue Shopping</Text>
+        <TouchableOpacity
+          style={styles.continueButton}
+          onPress={() => navigation.navigate('BottomTabNavigator', { screen: 'Home' })}
+        >
+          <Text style={styles.continueButtonText}>Tiếp tục mua sắm</Text>
         </TouchableOpacity>
       </View>
     </View>

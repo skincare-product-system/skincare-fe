@@ -22,7 +22,8 @@ class Http {
 
   constructor() {
     this.instance = axios.create({
-      baseURL: `https://7f8d-2402-800-63a9-fa3f-d0f1-25e-3770-5713.ngrok-free.app`,
+      baseURL: `http://172.0.0.138:3000`,
+      // baseURL: 'https://skincare-be-mma.onrender.com',
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json'
@@ -45,7 +46,6 @@ class Http {
     this.instance.interceptors.response.use(
       async (response) => {
         const { url } = response.config
-        console.log('data', response.data.result)
 
         if (url.includes('login') || url.includes('register')) {
           const { access_token, refresh_token } = response.data.result

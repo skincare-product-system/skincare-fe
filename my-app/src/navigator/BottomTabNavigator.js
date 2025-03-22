@@ -3,7 +3,8 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
-import { CategoryScreen, HomeScreen, ProfileScreen } from '../../screens'
+import { CategoryScreen } from '../../screens'
+import Home from '../../screens/home/HomeScreen'
 
 import AccountNavigator from './AccountNavigator'
 
@@ -17,7 +18,7 @@ export default function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <Ionicons name='home' size={35} color={color} />,
           title: 'Trang Chủ'
         }}
-        component={HomeScreen}
+        component={Home}
       />
       <Tab.Screen
         name='CategoryScreen'
